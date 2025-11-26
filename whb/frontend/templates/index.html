@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>WHB – IA Cosmética</title>
+    <link rel="stylesheet" href="/static/whb.css">
+</head>
+<body>
+<div class="bg-futuristic"></div>
+
+<div class="app-wrapper">
+    <header class="app-header">
+        <div class="logo">WHB</div>
+        <div class="header-text">
+            <h1>WHB · Skin IA Lab</h1>
+            <p>Analiza tu piel en tiempo real, descubre tus puntos a mejorar y prueba las cremas MartiDerm con simulación visual.</p>
+        </div>
+    </header>
+
+    <main class="app-main">
+        <section class="left-panel">
+            <div class="card">
+                <h2>¿Cómo quieres empezar?</h2>
+                <p class="small">
+                    1. Haz un selfie o sube una foto.<br>
+                    2. La IA analiza tu piel y te marca los puntos a mejorar.<br>
+                    3. Prueba cada crema con el comparador de media cara.
+                </p>
+
+                <button class="btn btn-primary" id="btnSelfie">Modo selfie</button>
+                <label for="fileInput" class="btn btn-secondary">Subir foto</label>
+                <input type="file" id="fileInput" accept="image/*" hidden>
+                <button class="btn btn-secondary" id="btnModelo">Usar modelo</button>
+
+                <div class="note">El navegador te pedirá permiso para usar la cámara (getUserMedia).</div>
+            </div>
+
+            <div class="card" id="analysisCard">
+                <h2>Primera valoración de tu piel</h2>
+                <div id="resultado" class="resultado-text">
+                    Aún no hemos analizado tu piel. Haz un selfie o sube una foto para empezar.
+                </div>
+            </div>
+        </section>
+
+        <section class="right-panel">
+            <div class="viewer-card">
+                <h2>Vista previa & comparador</h2>
+
+                <div class="viewer-container">
+                    <video id="video" autoplay playsinline></video>
+
+                    <div id="compareWrapper" class="compare-wrapper">
+                        <img id="imgOriginal" class="img-layer" alt="Original">
+                        <img id="imgFiltered" class="img-layer top-layer" alt="Con crema">
+                        <div class="compare-divider" id="divider"></div>
+                    </div>
+
+                    <div id="noImageText" class="no-image-text">
+                        Todavía no hay imagen. Activa la cámara o sube una foto.
+                    </div>
+                </div>
+
+                <div class="slider-row">
+                    <label for="compareSlider">Desliza para ver media cara con crema:</label>
+                    <input type="range" id="compareSlider" min="0" max="100" value="50">
+                </div>
+            </div>
+
+            <div class="products-card">
+                <h2>Cremas MartiDerm recomendadas</h2>
+                <p class="small">Puedes dejar que la IA te recomiende o seleccionar una crema manualmente para aplicar el filtro de simulación.</p>
+                <div class="products-grid">
+                    {% for p in productos %}
+                    <button class="product-pill" data-product-id="{{ p.id }}">
+                        <span class="product-name">{{ p.nombre }}</span>
+                        <span class="product-beneficio">{{ p.beneficio }}</span>
+                    </button>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="app-footer">
+        <span>WHB · Proyecto IA Cosmética · Demo educativa (sin uso comercial real).</span>
+    </footer>
+</div>
+
+<script src="/static/whb.js"></script>
+</body>
+</html>

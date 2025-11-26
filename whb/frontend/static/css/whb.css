@@ -114,11 +114,23 @@ body {
 .btn-secondary {
     background: #1b1c2a;
     color: #f5f5f5;
+    display: block;
+    text-align: center;
 }
 
 .btn:hover {
     transform: translateY(-1px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+}
+
+.button-group .btn {
+    /* Asegura que todos los botones en el grupo tengan el margen para separarse */
+    margin-top: 8px; 
+}
+
+/* El primer elemento del grupo no debe tener margen superior para pegarse al texto de arriba */
+.button-group .btn:first-child {
+    margin-top: 0;
 }
 
 .note {

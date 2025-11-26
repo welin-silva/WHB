@@ -14,7 +14,9 @@ app = Flask(
     static_folder="../frontend/static"        # 👈 css/js/img
 )
 
+# -----------------------------
 # Productos MartiDerm (los de tu imagen)
+# -----------------------------
 MARTIDERM_PRODUCTS = [
     {
         "id": "arrugas",
@@ -49,6 +51,16 @@ MARTIDERM_PRODUCTS = [
 ]
 
 
+# -----------------------------
+# Lógica sencilla de “IA” de demo
+# -----------------------------
+def buscar_producto(pid: str):
+    for p in MARTIDERM_PRODUCTS:
+        if p["id"] == pid:
+            return p
+    return None
+
+
 def analizar_piel_sencillo(imagen_pil: Image.Image) -> dict:
     """
     Análisis sencillo con 'IA ligera' para demo.
@@ -56,16 +68,15 @@ def analizar_piel_sencillo(imagen_pil: Image.Image) -> dict:
       - landmarks faciales
       - detección de zonas concretas
     """
-
-    # Convertimos la imagen a array NumPy
+    # Redimensionamos y pasamos a array
     img = np.array(imagen_pil.resize((256, 256)))
-    # pasamos a espacio HSV para mirar brillo y tono
+
+    # Espacio HSV para mirar brillo y tono
     hsv = Image.fromarray(img).convert("HSV")
     hsv_np = np.array(hsv)
 
-    # Canal de luminosidad (V)
+    # Canal de luminosidad (V) y saturación (S)
     luminosidad_media = hsv_np[:, :, 2].mean()
-    # Canal de saturación (S)
     saturacion_media = hsv_np[:, :, 1].mean()
 
     problemas = []
@@ -83,19 +94,20 @@ def analizar_piel_sencillo(imagen_pil: Image.Image) -> dict:
         problemas.append("Tono poco uniforme, posible apariencia de manchas suaves")
         recomendaciones.append(buscar_producto("manchas"))
 
-    # añadimos algunos problemas estándar para mostrar todos los productos
-    # (así enseñamos el potencial aunque la IA todavía sea sencilla)
+    # Añadimos algunos problemas estándar para enseñar todo el catálogo
     if buscar_producto("arrugas") not in recomendaciones:
         recomendaciones.append(buscar_producto("arrugas"))
         problemas.append("Líneas de expresión en contorno de ojos / frente (estimado)")
+
     if buscar_producto("firmeza") not in recomendaciones:
         recomendaciones.append(buscar_producto("firmeza"))
         problemas.append("Necesidad de mayor firmeza en óvalo facial (estimado)")
+
     if buscar_producto("acne") not in recomendaciones:
         recomendaciones.append(buscar_producto("acne"))
         problemas.append("Posibles imperfecciones o textura irregular (estimado)")
 
-    # Eliminamos posibles None y duplicados
+    # Eliminamos None y duplicados
     recomendaciones = [p for p in recomendaciones if p]
     unique = []
     seen = set()
@@ -114,30 +126,37 @@ def analizar_piel_sencillo(imagen_pil: Image.Image) -> dict:
     }
 
 
-def buscar_producto(pid: str):
-    for p in MARTIDERM_PRODUCTS:
-        if p["id"] == pid:
-            return p
-    return None
-
-
+# -----------------------------
+# Rutas Flask
+# -----------------------------
 @app.route("/")
 def index():
     return render_template("index.html", productos=MARTIDERM_PRODUCTS)
 
 
-@app.route("/analyze", methods=["POST"])
-def analyze():
-    data = request.get_json()
-    if not data or "image" not in data:
+@app.route("/analizar_piel", methods=["POST"])
+def analizar_piel_api():
+    """
+    Endpoint que recibe una imagen en base64 (data URL)
+    y devuelve el análisis sencillo.
+    """
+    data = request.get_json() or {}
+    image_data = data.get("image")
+
+    if not image_data:
         return jsonify({"error": "No se ha recibido imagen"}), 400
 
-    image_data = data["image"].split(",")[1]
-    image_bytes = base64.b64decode(image_data)
-    imagen = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+    # Eliminar el prefijo "data:image/xxx;base64," si viene incluido
+    if "," in image_data:
+        image_data = image_data.split(",", 1)[1]
+
+    try:
+        image_bytes = base64.b64decode(image_data)
+        imagen = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+    except Exception as e:
+        return jsonify({"error": f"Imagen no válida: {e}"}), 400
 
     resultado = analizar_piel_sencillo(imagen)
-
     return jsonify(resultado)
 
 

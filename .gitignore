@@ -1,0 +1,12 @@
+# Ignorar archivos de macOS
+.DS_Store
+**/.DS_Store
+
+# Entornos virtuales
+venv/
+ENV/
+env/
+
+# Cachés de Python
+__pycache__/
+*.pyc

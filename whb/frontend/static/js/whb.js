@@ -70,7 +70,6 @@ function showCompare() {
 // slider media cara
 function updateSliderPosition(val) {
     const percent = Number(val);
-    // top-layer visible desde la izquierda hasta el porcentaje
     imgFiltered.style.clipPath = `inset(0 ${100 - percent}% 0 0)`;
     divider.style.left = `${percent}%`;
 }
@@ -82,14 +81,19 @@ compareSlider.addEventListener("input", (e) => {
 // ---- Envío a backend para análisis ----
 async function enviarImagenParaAnalisis(dataUrl) {
     resultadoDiv.textContent = "Analizando tu piel con IA...";
+    console.log("Enviando imagen al backend…");
+
     try {
-        const res = await fetch("/analyze", {
+        const res = await fetch("/analizar_piel", {
+            // 👈 ahora coincide con la ruta Flask
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ image: dataUrl })
         });
 
         const data = await res.json();
+        console.log("Respuesta backend:", data);
+
         if (!res.ok) {
             resultadoDiv.textContent = "Error: " + (data.error || "No se pudo analizar la imagen.");
             return;
@@ -179,8 +183,6 @@ fileInput.addEventListener("change", () => {
 
 // ---- Usar modelo (demo) ----
 btnModelo.addEventListener("click", () => {
-    // Podrías poner /static/modelo.jpg si añades una foto ahí.
-    // De momento creamos una imagen de prueba gris.
     const canvas = document.createElement("canvas");
     canvas.width = 400;
     canvas.height = 500;

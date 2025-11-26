@@ -8,7 +8,11 @@ import numpy as np
 # import cv2
 # import mediapipe as mp
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    template_folder="../frontend/templates",   # 👈 ruta correcta
+    static_folder="../frontend/static"        # 👈 css/js/img
+)
 
 # Productos MartiDerm (los de tu imagen)
 MARTIDERM_PRODUCTS = [

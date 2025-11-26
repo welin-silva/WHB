@@ -11,7 +11,7 @@ body {
     margin: 0;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro", sans-serif;
     color: #f5f5f5;
-    background: #050711;
+    background: #ffffff;
     min-height: 100vh;
 }
 
@@ -35,10 +35,10 @@ body {
 /* Contenedor principal de la aplicación (centrado, tamaño máximo y efectos visuales) */
 .app-wrapper {
     max-width: 90vw; /* Usa el 90% del ancho de la pantalla */
-    margin: 15px auto; /* Margen superior/inferior para separarlo de los bordes */
+    margin: 30px auto; /* Margen superior/inferior para separarlo de los bordes */
     padding: 16px 20px 32px;
     backdrop-filter: blur(14px);
-    background: linear-gradient(135deg, rgba(15, 15, 30, 0.9), rgba(5, 5, 12, 0.95));
+background: linear-gradient(135deg, rgba(200, 200, 210, 0.05), rgba(255, 255, 255, 0.01));
     border-radius: 24px;
     box-shadow: 0 24px 80px rgba(0, 0, 0, 0.7);
     min-height: 95vh; /* Altura mínima para forzar el crecimiento y evitar scroll */

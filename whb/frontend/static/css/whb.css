@@ -2,16 +2,14 @@
  * CONFIGURACIÓN BASE    *
  *********************************/
 * {
-    /* Define que el padding y el borde se incluyan en el ancho y alto total */
     box-sizing: border-box;
 }
 
-/* Estilos principales del cuerpo: fuente, color de fondo, margen */
 body {
     margin: 0;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro", sans-serif;
     color: #f5f5f5;
-    background: #ffffff;
+    background: #050711;
     min-height: 100vh;
 }
 
@@ -19,7 +17,6 @@ body {
 /*********************************
  * FONDO Y WRAPPER       *
  *********************************/
-/* Fondo futurista: gradientes fijos y abstractos */
 .bg-futuristic {
     position: fixed;
     inset: 0;
@@ -32,22 +29,20 @@ body {
     z-index: -2;
 }
 
-/* Contenedor principal de la aplicación (centrado, tamaño máximo y efectos visuales) */
 .app-wrapper {
-    max-width: 90vw; /* Usa el 90% del ancho de la pantalla */
-    margin: 30px auto; /* Margen superior/inferior para separarlo de los bordes */
+    max-width: 90vw;
+    margin: 30px auto;
     padding: 16px 20px 32px;
     backdrop-filter: blur(14px);
-background: linear-gradient(135deg, rgba(200, 200, 210, 0.05), rgba(255, 255, 255, 0.01));
+    background: linear-gradient(135deg, rgba(200, 200, 210, 0.05), rgba(255, 255, 255, 0.01));
     border-radius: 24px;
     box-shadow: 0 24px 80px rgba(0, 0, 0, 0.7);
-    min-height: 95vh; /* Altura mínima para forzar el crecimiento y evitar scroll */
+    min-height: 95vh;
 }
 
 /*********************************
  * ENCABEZADO (HEADER)   *
  *********************************/
-/* Estilos principales del encabezado: usa flexbox para alinear el logo y el texto */
 .app-header {
     display: flex;
     align-items: center;
@@ -57,7 +52,6 @@ background: linear-gradient(135deg, rgba(200, 200, 210, 0.05), rgba(255, 255, 25
     padding-bottom: 12px;
 }
 
-/* Estilos del contenedor del logo */
 .logo {
     width: 52px;
     height: 52px;
@@ -71,7 +65,6 @@ background: linear-gradient(135deg, rgba(200, 200, 210, 0.05), rgba(255, 255, 25
     font-size: 0.9rem;
 }
 
-/* Títulos y párrafos dentro del encabezado */
 .header-text h1 {
     margin: 0 0 4px;
     font-size: 1.4rem;
@@ -87,32 +80,33 @@ background: linear-gradient(135deg, rgba(200, 200, 210, 0.05), rgba(255, 255, 25
 /*********************************
  * LAYOUT PRINCIPAL (GRID)  *
  *********************************/
-/* Contenedor principal: usa Grid para la estructura de 2 columnas (panel izq. y der.) */
 .app-main {
     display: grid;
     grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
     gap: 40px; 
 }
 
-/* Estilos comunes para todas las tarjetas de contenido (card, viewer, products) */
 .card,
 .viewer-card,
 .products-card {
     background: rgba(7, 8, 22, 0.95);
     border-radius: 18px;
-    padding: 16px 18px;
+    padding: 16px 14px; 
     border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-/* Estilos para todos los títulos H2 dentro de las tarjetas */
 .card h2,
 .viewer-card h2,
 .products-card h2 {
-    margin: 0 0 8px;
-    font-size: 1.05rem;
+    font-size: 1.4rem; 
+    font-weight: 700;
+    margin: 0 0 4px; 
 }
 
-/* Estilo para texto pequeño y secundario */
+.products-card p.small {
+    margin-bottom: 15px; 
+}
+
 .small {
     font-size: 0.85rem;
     color: #b0b0c2;
@@ -122,7 +116,6 @@ background: linear-gradient(135deg, rgba(200, 200, 210, 0.05), rgba(255, 255, 25
 /*********************************
  * ESTILOS DE BOTONES     *
  *********************************/
-/* Estilos base para todos los botones (incluye la etiqueta de "Subir foto") */
 .btn {
     width: 100%;
     border-radius: 999px;
@@ -134,7 +127,6 @@ background: linear-gradient(135deg, rgba(200, 200, 210, 0.05), rgba(255, 255, 25
     transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.15s ease;
 }
 
-/* Estilos del botón principal (color degradado rosa/morado) */
 .btn-primary {
     background: linear-gradient(135deg, #ff2d8f, #ff4ec4);
     color: #fff;
@@ -142,59 +134,51 @@ background: linear-gradient(135deg, rgba(200, 200, 210, 0.05), rgba(255, 255, 25
     box-shadow: 0 8px 18px rgba(255, 77, 172, 0.45);
 }
 
-/* Estilos del botón secundario (fondo oscuro). Modificado para que el <label> se vea bien. */
 .btn-secondary {
     background: #1b1c2a;
     color: #f5f5f5;
-    display: block; /* Obliga a la etiqueta a tomar todo el ancho */
-    text-align: center; /* Centra el texto dentro de la etiqueta */
+    display: block; 
+    text-align: center; 
 }
 
-/* Efecto de hover (al pasar el ratón) para todos los botones */
 .btn:hover {
     transform: translateY(-1px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
 }
 
-/* Estilos del grupo de botones (controla el espaciado entre ellos) */
 .button-group .btn {
-    /* Asegura que todos los botones en el grupo tengan el margen para separarse */
-    margin-top: 8px; 
+    margin-top: 4px; 
 }
 
-/* Elimina el margen superior en el primer botón del grupo */
 .button-group .btn:first-child {
-    margin-top: 0;
+    margin-top: 4px;
 }
 
-/* Estilo para las notas informativas pequeñas */
 .note {
-    margin-top: 10px;
+    margin-top: 14px; 
     font-size: 0.78rem;
     color: #8e8ea3;
+    border-top: 1px dashed rgba(255, 255, 255, 0.05); 
+    padding-top: 8px;
 }
-
 
 /*********************************
  * VISOR Y COMPARADOR    *
  *********************************/
-/* Ajuste de margen para la tarjeta del visor */
 .viewer-card {
     margin-bottom: 12px;
 }
 
-/* Contenedor del visor de imágenes/vídeo (marco y fondo de la zona de previsualización) */
 .viewer-container {
     margin-top: 10px;
     position: relative;
     border-radius: 18px;
     overflow: hidden;
     background: radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.04), transparent 60%);
-    min-height: 500px; /* Altura mínima para que se estire verticalmente */
+    min-height: 500px; 
     border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Oculta el elemento de vídeo por defecto */
 #video {
     width: 100%;
     height: 100%;
@@ -202,14 +186,12 @@ background: linear-gradient(135deg, rgba(200, 200, 210, 0.05), rgba(255, 255, 25
     display: none;
 }
 
-/* Contenedor para el comparador de media cara (oculto por defecto) */
 .compare-wrapper {
     position: absolute;
     inset: 0;
     display: none;
 }
 
-/* Estilo base para las capas de imagen (original y filtrada) */
 .img-layer {
     position: absolute;
     inset: 0;
@@ -218,12 +200,10 @@ background: linear-gradient(135deg, rgba(200, 200, 210, 0.05), rgba(255, 255, 25
     object-fit: contain; 
     object-position: center; 
 }
-/* Capa superior (imagen con filtro). El clip se ajusta con JS para crear el efecto de división. */
 .top-layer {
     clip-path: inset(0 50% 0 0);
 }
 
-/* Línea divisoria en el comparador */
 .compare-divider {
     position: absolute;
     top: 0;
@@ -236,7 +216,6 @@ background: linear-gradient(135deg, rgba(200, 200, 210, 0.05), rgba(255, 255, 25
     pointer-events: none;
 }
 
-/* Texto que se muestra cuando no hay imagen activa */
 .no-image-text {
     position: absolute;
     inset: 0;
@@ -249,14 +228,12 @@ background: linear-gradient(135deg, rgba(200, 200, 210, 0.05), rgba(255, 255, 25
     text-align: center;
 }
 
-/* Fila que contiene la etiqueta y el slider de comparación */
 .slider-row {
     margin-top: 10px;
     font-size: 0.82rem;
     color: #c1c1d4;
 }
 
-/* Estilo del slider de comparación */
 #compareSlider {
     width: 100%;
     margin-top: 4px;
@@ -266,70 +243,200 @@ background: linear-gradient(135deg, rgba(200, 200, 210, 0.05), rgba(255, 255, 25
 /*********************************
  * RESULTADOS Y PRODUCTOS    *
  *********************************/
-/* Estilo del texto que muestra el resultado del análisis de la piel */
 .resultado-text {
     font-size: 0.86rem;
     color: #d3d3e0;
 }
 
-/* Estilo para las listas desordenadas dentro del resultado */
 .resultado-text ul {
     padding-left: 18px;
     margin: 6px 0 0;
 }
 
-/* Contenedor de la rejilla de productos, usa Grid para disposición flexible */
+#initialMessage p {
+    line-height: 1.4;
+}
+#initialMessage p:first-child {
+    color: #ff9900; 
+    margin-bottom: 0;
+}
+
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+    grid-auto-rows: minmax(140px, auto); 
+    grid-auto-flow: dense; 
     gap: 8px;
     margin-top: 8px;
 }
 
-/* Estilo base de cada pastilla de producto (botón) */
 .product-pill {
     background: #171726;
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 8px 10px;
+    padding: 15px 15px 10px; 
     text-align: left;
     cursor: pointer;
     font-size: 0.8rem;
     color: #f5f5ff;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+    display: flex; 
+    flex-direction: column; 
+    align-items: flex-start; 
+    justify-content: space-between; 
+    min-height: 140px; 
+    gap: 0; 
     transition: border 0.1s ease, background 0.1s ease, transform 0.08s ease;
 }
 
-/* Efecto hover en las pastillas de producto */
+.product-pill * {
+    pointer-events: none;
+}
+
+.product-pill-lg {
+    grid-row: span 2; 
+    min-height: 290px; 
+    padding: 20px 15px; 
+}
+
+.product-image-container {
+    width: 100%; 
+    height: auto; 
+    max-height: 180px; 
+    margin-top: 10px;
+    align-self: center;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    overflow: hidden; 
+    flex-shrink: 0; 
+    background-color: #171726;
+    border-radius: 4px; 
+    transition: background-color 0.1s ease;
+}
+
+.product-pill:hover .product-image-container {
+    background-color: #1e1f34;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+}
+
+.product-details {
+    display: flex;
+    flex-direction: column; 
+    gap: 2px;
+    width: 100%; 
+    min-width: 0; 
+    margin-bottom: 20px; 
+    
+    align-items: center; 
+    text-align: center; 
+}
+
+.product-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    line-height: 1.3;
+}
+.product-beneficio {
+    font-size: 0.75rem; 
+    color: #d0cfe9;
+}
+
+
 .product-pill:hover {
     border-color: rgba(255, 45, 143, 0.6);
-    background: #1e1f34;
+    background-color: #1e1f34; 
     transform: translateY(-1px);
 }
 
-/* Estilo cuando una pastilla de producto está activa/seleccionada */
+.product-pill.active .product-image-container {
+    background-color: #24172a; 
+}
+
 .product-pill.active {
     border-color: #ff2d8f;
     background: #24172a;
+    background-color: #24172a;
 }
 
-/* Tipografía de los detalles del producto */
-.product-name {
+.product-pill-lg .product-image-container { 
+    max-height: 220px; 
+}
+.product-pill-lg .product-name { 
+    font-size: 1.2rem;
+}
+.product-pill-lg .product-beneficio { 
+    font-size: 0.85rem;
+}
+
+
+/*********************************
+ * ESTILOS DE ANÁLISIS IA - NUEVOS *
+ *********************************/
+.analysis-title {
+    font-size: 0.95rem;
     font-weight: 600;
+    margin: 12px 0 8px;
+    color: #00ffc8; 
+    border-bottom: 1px solid rgba(0, 255, 200, 0.2);
+    padding-bottom: 4px;
 }
 
-.product-beneficio {
-    font-size: 0.78rem;
-    color: #d0cfe9;
+.analysis-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px; 
+}
+
+.analysis-item {
+    display: flex;
+    justify-content: space-between; 
+    font-size: 0.9rem;
+    padding-right: 10px;
+}
+
+.analysis-item .metric {
+    font-weight: 400;
+    color: #b0b0c2;
+    flex-basis: 65%; 
+}
+
+.analysis-item .value {
+    font-weight: 700;
+    text-align: right;
+}
+
+.result-warning {
+    color: #ff9900; 
+}
+.result-critical {
+    color: #ff2d8f; 
+}
+
+.simple-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 8px;
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+.simple-list li {
+    color: #d3d3e0;
+}
+.simple-list li strong {
+    color: #ffffff; 
 }
 
 
 /*********************************
  * PIE DE PÁGINA          *
  *********************************/
-/* Estilo del pie de página */
 .app-footer {
     margin-top: 14px;
     font-size: 0.78rem;
@@ -343,70 +450,69 @@ background: linear-gradient(135deg, rgba(200, 200, 210, 0.05), rgba(255, 255, 25
  *********************************/
 /* Tablet y Móviles (Pantallas de hasta 1024px) */
 @media (max-width: 1024px) {
-    /* El layout principal de 2 columnas se convierte en 1 columna apilada */
     .app-main {
         grid-template-columns: minmax(0, 1fr);
         gap: 30px;
     }
     
-    /* El contenedor principal puede ser un poco más pequeño en tablets */
     .app-wrapper {
         max-width: 95vw;
         min-height: auto; 
     }
     
-    /* Reducimos el tamaño mínimo del visor en tablet (se vuelve scrollable) */
     .viewer-container {
         min-height: 400px;
     }
 
-    /* La rejilla de productos debe tener columnas más pequeñas en tablets */
     .products-grid {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+        grid-auto-rows: minmax(120px, auto); 
+    }
+
+    .product-pill {
+        min-height: 120px;
+    }
+    .product-pill-lg {
+        min-height: 250px; 
+        padding: 15px 15px 10px;
+        grid-row: span 2; 
     }
 }
 
 /* Móviles (Pantallas de hasta 600px) */
 @media (max-width: 600px) {
-    /* Reducimos el padding general */
     .app-wrapper {
         padding: 12px 12px 20px;
-        margin: 0; /* Quitamos el margen para móviles, ocupa todo el ancho */
-        border-radius: 0; /* Opcional: quitamos el borde redondeado para móviles */
+        margin: 0; 
+        border-radius: 0; 
         max-width: 100vw;
     }
     
-    /* El encabezado se vuelve más compacto */
     .app-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 8px;
     }
     
-    /* El logo se ajusta */
     .logo {
         width: 40px;
         height: 40px;
     }
     
-    /* Aseguramos que las tarjetas tengan un poco menos de padding */
     .card,
     .viewer-card,
     .products-card {
         padding: 12px 14px;
     }
     
-    /* Ajustamos la altura mínima del visor para que quepa mejor en la pantalla */
     .viewer-container {
         min-height: 300px;
     }
     
-    /* Reducimos el tamaño de las columnas de la rejilla de productos para móviles */
     .products-grid {
         grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     }
     
-    /* Ajustamos el tamaño de fuente para móviles */
     .header-text h1 {
         font-size: 1.2rem;
     }

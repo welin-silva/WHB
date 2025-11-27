@@ -43,15 +43,34 @@
             <div class="card" id="analysisCard">
                 <h2>Primera valoración de tu piel</h2>
                 <div id="resultado" class="resultado-text">
-                    Aún no hemos analizado tu piel. Haz un selfie o sube una foto para empezar.
-                </div>
+                    <div id="initialMessage">
+                        <p style="margin: 0; font-weight: 600;">Modo Inactivo</p>
+                        <p class="small" style="margin-top: 5px;">
+                            Para empezar el análisis con IA, pulsa "Modo selfie" o sube tu imagen.
+                            Aquí verás las **6 métricas clave** de tu piel.
+                        </p>
+                    </div>
+                    
+                    <div id="iaResults" style="display: none;">
+                        
+                        <h3 class="analysis-title">Puntos Clave Detectados</h3>
+                        
+                        <div class="analysis-grid" id="analysisDataGrid">
+                            </div>
+
+                        <h3 class="analysis-title">Resumen de Recomendaciones</h3>
+                        
+                        <ul class="simple-list" id="recommendationSummary">
+                            </ul>
+
+                    </div>
+                    </div>
             </div>
-        </section>
+            </section>
 
         <section class="right-panel">
             <div class="viewer-card">
                 <h2>Vista previa & comparador</h2>
-
                 <div class="viewer-container">
                     <video id="video" autoplay playsinline></video>
 
@@ -77,9 +96,14 @@
                 <p class="small">Puedes dejar que la IA te recomiende o seleccionar una crema manualmente para aplicar el filtro de simulación.</p>
                 <div class="products-grid">
                     {% for p in productos %}
-                    <button class="product-pill" data-product-id="{{ p.id }}">
-                        <span class="product-name">{{ p.nombre }}</span>
-                        <span class="product-beneficio">{{ p.beneficio }}</span>
+                    <button class="product-pill product-pill-lg" data-product-id="{{ p.id }}">
+                        <div class="product-image-container">
+                            <img src="{{ p.imagen_url }}" alt="{{ p.nombre }}" class="product-image">
+                        </div>
+                        <div class="product-details">
+                            <span class="product-name">{{ p.nombre }}</span>
+                            <span class="product-beneficio">{{ p.beneficio }}</span>
+                        </div>
                     </button>
                     {% endfor %}
                 </div>

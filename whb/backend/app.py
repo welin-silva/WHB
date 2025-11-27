@@ -20,33 +20,33 @@ app = Flask(
 MARTIDERM_PRODUCTS = [
     {
         "id": "arrugas",
-        "nombre": "Black Diamond – Epigence Optima SPF 50+ (Arrugas)",
+        "nombre": "Black Diamond Epigence SPF 50+ (Arrugas)",
         "beneficio": "-36% arrugas / líneas de expresión",
-        "descripcion": "Ayuda a reducir arrugas en contorno de ojos, frente y boca."
+        "imagen_url": "/static/img/arrugas.jpeg"  # RUTA DE IMAGEN
     },
     {
         "id": "manchas",
-        "nombre": "Pigment Zero – DSP-Cover / DSP-Cream (Manchas)",
+        "nombre": "Pigment Zero - DSP-Cover (DSP-Cream (Manchas))",
         "beneficio": "65% tono más uniforme",
-        "descripcion": "Reduce la apariencia de manchas e iguala el tono de la piel."
+        "imagen_url": "/static/img/manchas.jpeg"
     },
     {
         "id": "firmeza",
-        "nombre": "Black Diamond – Skin Complex Advanced (Firmeza)",
+        "nombre": "Black Diamond Skin Complex Advanced (Firmeza)",
         "beneficio": "24% piel más firme",
-        "descripcion": "Mejora la firmeza y la forma del óvalo facial y pómulos."
+        "imagen_url": "/static/img/firmeza.jpeg"
     },
     {
         "id": "piel_apagada",
-        "nombre": "Booster – Serum Ultimate Antiox (Piel apagada)",
+        "nombre": "Booster - Serum Ultimate Antiox (Piel apagada)",
         "beneficio": "91% piel más luminosa",
-        "descripcion": "Aporta luminosidad y efecto glow a la piel cansada."
+        "imagen_url": "/static/img/piel_apagada.jpeg"
     },
     {
         "id": "acne",
-        "nombre": "Acniover – Crema Tratante (Acné / imperfecciones)",
-        "beneficio": "-35% imperfecciones",
-        "descripcion": "Reduce el acné, las imperfecciones y unifica el tono."
+        "nombre": "Acniover - Crema Tratante (Acné / Imperfecciones)",
+        "beneficio": "35% imperfecciones",
+        "imagen_url": "/static/img/acne.jpeg"
     },
 ]
 

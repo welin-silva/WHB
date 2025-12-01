@@ -1,16 +1,14 @@
-// --- Lógica del Carrusel 3D (Versión Mediana) ---
+
 document.addEventListener('DOMContentLoaded', () => {
     
     // ==========================================
     // 1. CONFIGURACIÓN (TAMAÑO MEDIANO)
     // ==========================================
-    var radius = 260;        // Radio reducido (antes 400)
+    var radius = 260;
     var autoRotate = true;   
     var rotateSpeed = -60;   
-    
-    // DIMENSIONES MEDIANAS (Deben coincidir con el nuevo CSS .card-3d)
-    var imgWidth = 140;      // Antes 200
-    var imgHeight = 190;     // Antes 280
+    var imgWidth = 140;
+    var imgHeight = 190;
 
     // ==========================================
     // 2. INICIALIZACIÓN
@@ -20,43 +18,39 @@ document.addEventListener('DOMContentLoaded', () => {
     var odrag = document.getElementById('drag-container');
     var ospin = document.getElementById('spin-container');
     var interactionZone = document.querySelector('.carousel-section');
-    
     var aImg = ospin.getElementsByClassName('card-3d');
     var aEle = [...aImg]; 
 
-    // Aplicar tamaños
     ospin.style.width = imgWidth + "px";
     ospin.style.height = imgHeight + "px";
 
     var ground = document.getElementById('ground');
     if (ground) {
-        // Ajustamos el suelo al nuevo radio
         ground.style.width = radius * 3.5 + "px";
         ground.style.height = radius * 3.5 + "px";
     }
 
     function init(delayTime) {
-      for (var i = 0; i < aEle.length; i++) {
-        var transform = "rotateY(" + (i * (360 / aEle.length)) + "deg) translateZ(" + radius + "px)";
-        aEle[i].style.transform = transform;
-        aEle[i].style.transition = "transform 1s";
-        aEle[i].style.transitionDelay = delayTime || (aEle.length - i) / 4 + "s";
-      }
+        for (var i = 0; i < aEle.length; i++) {
+            var transform = "rotateY(" + (i * (360 / aEle.length)) + "deg) translateZ(" + radius + "px)";
+            aEle[i].style.transform = transform;
+            aEle[i].style.transition = "transform 1s";
+            aEle[i].style.transitionDelay = delayTime || (aEle.length - i) / 4 + "s";
+        }
     }
 
     // ==========================================
     // 3. ANIMACIÓN Y ROTACIÓN
     // ==========================================
     function applyTranform(obj) {
-      // Límites verticales
-      if(tY > 10) tY = 10; 
-      if(tY < 0) tY = 0;   
+        if(tY > 10) tY = 10; 
+        if(tY < 0) tY = 0;   
 
-      obj.style.transform = "rotateX(" + (-tY) + "deg) rotateY(" + (tX) + "deg)";
+        obj.style.transform = "rotateX(" + (-tY) + "deg) rotateY(" + (tX) + "deg)";
     }
 
     function playSpin(yes) {
-      ospin.style.animationPlayState = (yes ? 'running' : 'paused');
+        ospin.style.animationPlayState = (yes ? 'running' : 'paused');
     }
 
     var sX, sY, nX, nY, desX = 0,
@@ -64,9 +58,9 @@ document.addEventListener('DOMContentLoaded', () => {
         tX = 0,
         tY = 10; 
 
-    if (autoRotate) {
-      var animationName = (rotateSpeed > 0 ? 'spin' : 'spinRevert');
-      ospin.style.animation = `${animationName} ${Math.abs(rotateSpeed)}s infinite linear`;
+        if (autoRotate) {
+        var animationName = (rotateSpeed > 0 ? 'spin' : 'spinRevert');
+        ospin.style.animation = `${animationName} ${Math.abs(rotateSpeed)}s infinite linear`;
     }
 
     // ==========================================

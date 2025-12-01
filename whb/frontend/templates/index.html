@@ -61,24 +61,42 @@
 
         <section class="right-panel">
             
-            <div class="viewer-card">
-                <h2>Vista previa & comparador</h2>
-                <div class="viewer-container">
-                    <video id="video" autoplay playsinline></video>
-                    <div id="compareWrapper" class="compare-wrapper">
-                        <img id="imgOriginal" class="img-layer" alt="Original">
-                        <img id="imgFiltered" class="img-layer top-layer" alt="Con crema">
-                        <div class="compare-divider" id="divider"></div>
-                    </div>
-                    <div id="noImageText" class="no-image-text">
-                        Todavía no hay imagen. Activa la cámara o sube una foto.
-                    </div>
-                </div>
-                <div class="slider-row">
-                    <label for="compareSlider">Desliza para ver media cara con crema:</label>
-                    <input type="range" id="compareSlider" min="0" max="100" value="50">
-                </div>
+<div class="viewer-card">
+    <h2>Vista previa & comparador</h2>
+    <div class="viewer-container">
+        <video id="video" autoplay playsinline></video>
+        
+        <div id="compareWrapper" class="compare-wrapper">
+            <img id="imgOriginal" class="img-layer" alt="Original">
+            <img id="imgFiltered" class="img-layer top-layer" alt="Con crema">
+            <div class="compare-divider" id="divider"></div>
+        </div>
+
+        <div id="noImageText" class="no-image-text">
+            Todavía no hay imagen. Activa la cámara o sube una foto.
+        </div>
+
+        <div class="thumbnails-overlay">
+            <div class="thumb-item active" onclick="cambiarImagen('img1.jpg')">
+                <img src="https://via.placeholder.com/100x100?text=IMG+1" alt="Opción 1">
             </div>
+            <div class="thumb-item" onclick="cambiarImagen('img2.jpg')">
+                <img src="https://via.placeholder.com/100x100?text=IMG+2" alt="Opción 2">
+            </div>
+            <div class="thumb-item" onclick="cambiarImagen('img3.jpg')">
+                <img src="https://via.placeholder.com/100x100?text=IMG+3" alt="Opción 3">
+            </div>
+            <div class="thumb-item" onclick="cambiarImagen('img4.jpg')">
+                <img src="https://via.placeholder.com/100x100?text=IMG+4" alt="Opción 4">
+            </div>
+        </div>
+        </div>
+    
+    <div class="slider-row">
+        <label for="compareSlider">Desliza para ver media cara con crema:</label>
+        <input type="range" id="compareSlider" min="0" max="100" value="50">
+    </div>
+</div>
 
             <div class="carousel-section">
                 <h2 style="text-align: center; color: #ff4ec4; margin-bottom: 20px;">

@@ -15,7 +15,6 @@ let stream = null;
 let lastCapturedDataUrl = null;
 let currentProductId = null;
 
-// ---- Utilidades ----
 function setActiveProduct(pid) {
     currentProductId = pid;
     productButtons.forEach(btn => {
@@ -31,13 +30,11 @@ function setActiveProduct(pid) {
 function aplicarFiltroCrema() {
     if (!lastCapturedDataUrl) return;
 
-    // Imagen original siempre sin filtro
     imgOriginal.src = lastCapturedDataUrl;
 
-    // Simulación sencilla de "crema" según producto elegido
     let filterCss = "none";
     switch (currentProductId) {
-        case "piel_apagada": // luminosidad
+        case "piel_apagada":
             filterCss = "brightness(1.12) contrast(1.05) saturate(1.08)";
             break;
         case "manchas":
@@ -67,7 +64,6 @@ function showCompare() {
     compareWrapper.style.display = "block";
 }
 
-// slider media cara
 function updateSliderPosition(val) {
     const percent = Number(val);
     imgFiltered.style.clipPath = `inset(0 ${100 - percent}% 0 0)`;
@@ -78,14 +74,12 @@ compareSlider.addEventListener("input", (e) => {
     updateSliderPosition(e.target.value);
 });
 
-// ---- Envío a backend para análisis ----
 async function enviarImagenParaAnalisis(dataUrl) {
     resultadoDiv.textContent = "Analizando tu piel con IA...";
     console.log("Enviando imagen al backend…");
 
     try {
         const res = await fetch("/analizar_piel", {
-            // 👈 ahora coincide con la ruta Flask
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ image: dataUrl })
@@ -120,7 +114,6 @@ async function enviarImagenParaAnalisis(dataUrl) {
 
         resultadoDiv.innerHTML = html;
 
-        // si la IA ha recomendado algo, seleccionamos la primera crema por defecto
         if (data.recomendaciones && data.recomendaciones.length > 0) {
             setActiveProduct(data.recomendaciones[0].id);
         }
@@ -131,7 +124,6 @@ async function enviarImagenParaAnalisis(dataUrl) {
     }
 }
 
-// ---- Modo selfie ----
 btnSelfie.addEventListener("click", async () => {
     compareWrapper.style.display = "none";
     noImageText.style.display = "block";
@@ -150,7 +142,6 @@ btnSelfie.addEventListener("click", async () => {
 
     video.style.display = "block";
 
-    // Captura al hacer clic en el vídeo
     video.onclick = () => {
         if (!video.videoWidth) return;
 
@@ -162,12 +153,11 @@ btnSelfie.addEventListener("click", async () => {
         const dataUrl = canvas.toDataURL("image/png");
 
         lastCapturedDataUrl = dataUrl;
-        aplicarFiltroCrema(); // si ya hay crema seleccionada
+        aplicarFiltroCrema();
         enviarImagenParaAnalisis(dataUrl);
     };
 });
 
-// ---- Subir foto ----
 fileInput.addEventListener("change", () => {
     const file = fileInput.files[0];
     if (!file) return;
@@ -181,7 +171,6 @@ fileInput.addEventListener("change", () => {
     reader.readAsDataURL(file);
 });
 
-// ---- Usar modelo (demo) ----
 btnModelo.addEventListener("click", () => {
     const canvas = document.createElement("canvas");
     canvas.width = 400;
@@ -199,7 +188,6 @@ btnModelo.addEventListener("click", () => {
     enviarImagenParaAnalisis(lastCapturedDataUrl);
 });
 
-// ---- Selección manual de crema ----
 productButtons.forEach(btn => {
     btn.addEventListener("click", () => {
         const pid = btn.dataset.productId;
@@ -207,5 +195,4 @@ productButtons.forEach(btn => {
     });
 });
 
-// Posición inicial del slider
 updateSliderPosition(compareSlider.value);

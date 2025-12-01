@@ -3,7 +3,6 @@
    ========================================================= */
 
 .carousel-section {
-    /* Reducimos la altura del contenedor principal */
     height: 500px; 
     position: relative;
     display: flex;
@@ -29,22 +28,19 @@
     left: 0;
     top: 0;
     
-    /* NUEVAS DIMENSIONES (Antes 200x280) */
     width: 140px;  
     height: 190px; 
     
     background: rgba(255, 255, 255, 0.1); 
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 10px; /* Bordes un poco menos redondeados */
+    border-radius: 10px;
     
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    padding: 10px; /* Menos padding */
+    padding: 10px;
     cursor: grab;
-    
-    /* Reflejo más corto */
     -webkit-box-reflect: below 8px linear-gradient(transparent, transparent, #0004);
     transition: transform 0.3s, box-shadow 0.3s;
 }
@@ -61,7 +57,7 @@
 /* IMAGEN DEL PRODUCTO */
 .card-3d img {
     width: 100%;
-    height: 70%; /* Ajustado */
+    height: 70%;
     object-fit: contain;
     background: #fff; 
     border-radius: 4px;
@@ -79,7 +75,7 @@
 }
 
 .p-name {
-    font-size: 0.7rem; /* Fuente más pequeña */
+    font-size: 0.7rem;
     color: #fff;
     font-weight: 600;
     line-height: 1.1;
@@ -94,15 +90,15 @@
     left: 50%;
     transform: translate(-50%, -50%) rotateX(90deg);
     color: #fff;
-    font-size: 2em; /* Antes 3em */
+    font-size: 2em;
     opacity: 0.4;
     pointer-events: none;
 }
 
 /* SUELO BRILLANTE MÁS PEQUEÑO */
 #ground {
-    width: 800px;  /* Antes 1200 */
-    height: 800px; /* Antes 1200 */
+    width: 800px;
+    height: 800px;
     position: absolute;
     top: 100%;
     left: 50%;
@@ -119,4 +115,69 @@
 @keyframes spinRevert { 
     from{ transform: rotateY(360deg); } 
     to{ transform: rotateY(0deg); } 
+}
+
+
+
+
+
+
+/*********************************
+ * BARRA DE MINIATURAS (OVERLAY) *
+ *********************************/
+.thumbnails-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 80px; /* Altura de la franja roja de tu dibujo */
+    background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.4));
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 16px;
+    overflow-x: auto; /* Permite scroll horizontal si hay muchas */
+    z-index: 20; /* Para que quede encima de la imagen/video */
+    backdrop-filter: blur(4px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Ocultar barra de scroll fea pero permitir scroll */
+.thumbnails-overlay::-webkit-scrollbar {
+    height: 4px;
+}
+.thumbnails-overlay::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+.thumb-item {
+    min-width: 60px;
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.2s ease;
+    flex-shrink: 0; /* Evita que se aplasten */
+}
+
+.thumb-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Efecto Hover */
+.thumb-item:hover {
+    transform: translateY(-3px);
+    border-color: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+/* Estado Activo (la foto seleccionada) */
+.thumb-item.active {
+    border-color: #ff2d8f; /* Tu color rosa neón */
+    box-shadow: 0 0 10px rgba(255, 45, 143, 0.6);
 }

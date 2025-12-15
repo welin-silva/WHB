@@ -10,8 +10,8 @@ import numpy as np
 
 app = Flask(
     __name__,
-    template_folder="../frontend/templates",   # 👈 ruta correcta
-    static_folder="../frontend/static"        # 👈 css/js/img
+    template_folder="/frontend/templates",   # 👈 ruta correcta
+    static_folder="/frontend/static"        # 👈 css/js/img
 )
 
 # -----------------------------

@@ -60,9 +60,18 @@
         </section>
 
         <section class="right-panel">
-            
-            <div class="viewer-card">
+            <!--========================================-->
+            <!--======BOX DONDE SE MUESTRA LA FOTO======-->
+            <!--========================================-->
+            <div class="viewer-card" id="cardToFullscreen"> 
                 <h2>Vista previa & comparador</h2>
+                
+                <button id="btnFullscreen" class="fullscreen-btn" title="Pantalla Completa">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                    </svg>
+                </button>
+
                 <div class="viewer-container">
                     <video id="video" autoplay playsinline></video>
                     <div id="compareWrapper" class="compare-wrapper">
@@ -80,6 +89,9 @@
                 </div>
             </div>
 
+            <!--==================================-->
+            <!--======CARROUSEL DE PRODUCTOS======-->
+            <!--==================================-->
             <div class="carousel-section">
                 <h2 style="text-align: center; color: #ff4ec4; margin-bottom: 20px;">
                     Cremas MartiDerm recomendadas
@@ -112,5 +124,6 @@
 
 <script src="/static/js/whb.js" defer></script>
 <script src="../static/js/carrusel.js"></script>
+<script src="../static/js/comparador/comparador.js"></script>
 </body>
 </html>

@@ -3,7 +3,7 @@ import base64
 import io
 from PIL import Image
 import numpy as np
-
+      #hola
 # IA (para usar más adelante)
 # import cv2
 # import mediapipe as mp

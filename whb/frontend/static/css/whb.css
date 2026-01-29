@@ -594,3 +594,127 @@ body {
     width: 80%;
     margin-top: 20px;
 }
+/* ======================================================
+   MODO PANTALLA COMPLETA (FULLSCREEN OVERRIDES)
+   ====================================================== */
+
+/* 1. Contenedor Principal en Fullscreen */
+.viewer-card:fullscreen {
+    background: #050711; /* Fondo oscuro */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Empezar desde arriba */
+    align-items: center;
+    padding: 20px;
+    overflow-y: auto; /* Permitir scroll si la pantalla es pequeña */
+}
+
+/* Ocultar título y botón de fullscreen cuando ya estás en fullscreen */
+.viewer-card:fullscreen h2,
+.viewer-card:fullscreen #btnFullscreen {
+    display: none;
+}
+
+/* 2. Área de la Imagen/Video (Hacerla muy grande) */
+.viewer-card:fullscreen .viewer-container {
+    width: 100%;
+    max-width: 1200px; /* Que no se estire infinito en pantallas ultra-wide */
+    height: 65vh; /* Ocupa el 65% de la altura de la pantalla */
+    margin-bottom: 20px;
+    border: none;
+    background: transparent;
+}
+
+/* Ajuste del slider (barra deslizante) */
+.viewer-card:fullscreen .slider-row {
+    width: 60%;
+    margin-bottom: 30px;
+}
+
+/* ======================================================
+   TRANSFORMACIÓN DEL CARRUSEL 3D A FILA PLANA 2D
+   ====================================================== */
+
+/* 3. Contenedor del Carrusel en Fullscreen */
+.viewer-card:fullscreen .carousel-section {
+    width: 100%;
+    height: auto;
+    margin-top: 0;
+    padding-bottom: 50px;
+}
+
+.viewer-card:fullscreen .carousel-section h2 {
+    display: block; /* Mostrar título de productos */
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+}
+
+/* 4. Aplanar el contenedor 3D (Drag Container y Spin Container) */
+.viewer-card:fullscreen #drag-container,
+.viewer-card:fullscreen #spin-container {
+    position: relative !important;
+    display: flex !important;
+    flex-wrap: wrap !important; /* Si no caben, que bajen a la siguiente línea */
+    justify-content: center !important;
+    align-items: center !important;
+    
+    /* ANULAR TODA LA LÓGICA 3D y ROTACIÓN JS */
+    transform: none !important; 
+    animation: none !important;
+    perspective: none !important;
+    transform-style: flat !important;
+    
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Elemento base del suelo (ground) ocultarlo en modo plano */
+.viewer-card:fullscreen #ground {
+    display: none !important;
+}
+
+/* 5. Estilo de las Tarjetas de Producto (Planos) */
+.viewer-card:fullscreen .card-3d {
+    /* Resetear posición absoluta */
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    
+    /* Resetear rotaciones individuales */
+    transform: none !important;
+    
+    /* Nuevo estilo tipo "Grid" o fila */
+    width: 140px !important;
+    height: 190px !important;
+    margin: 10px !important;
+    
+    /* Bordes y fondo */
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: none !important;
+    -webkit-box-reflect: unset !important; /* Quitar el reflejo del suelo */
+}
+
+/* Hover simple en las tarjetas planas */
+.viewer-card:fullscreen .card-3d:hover {
+    background: rgba(255, 45, 143, 0.2);
+    border-color: #ff2d8f;
+    transform: translateY(-5px) !important; /* Pequeño salto al pasar mouse */
+}
+
+/* Ajustar imagen dentro de la tarjeta */
+.viewer-card:fullscreen .card-3d img {
+    width: 100%;
+    height: 70%;
+    object-fit: contain;
+}
+
+/* Ajustar texto dentro de la tarjeta */
+.viewer-card:fullscreen .card-3d-text {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+}

@@ -521,3 +521,76 @@ body {
         font-size: 1.2rem;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* --- ESTILOS DE PANTALLA COMPLETA --- */
+
+/* Posicionamiento relativo para que el botón absoluto sepa dónde colocarse */
+.viewer-card {
+    position: relative; 
+    /* Si ya tenías background en .viewer-card, esta línea de abajo sobra */
+    /* background: rgba(255, 255, 255, 0.05); */
+}
+
+/* Estilo del botón */
+.fullscreen-btn {
+    position: absolute;
+    top: 20px;       /* Ajusta según tu diseño */
+    right: 20px;     /* Ajusta según tu diseño */
+    background: rgba(0, 0, 0, 0.6); /* Fondo semitransparente */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    z-index: 100;    /* Importante: Para que quede por encima del video */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.fullscreen-btn:hover {
+    background: #ff4ec4; /* Tu color rosa al pasar el ratón */
+    border-color: #ff4ec4;
+    transform: scale(1.1); /* Pequeño efecto de zoom */
+}
+
+/* AJUSTES CUANDO ESTÁ EN MODO PANTALLA COMPLETA */
+/* La pseudoclase :fullscreen se activa sola cuando el navegador entra en ese modo */
+.viewer-card:fullscreen {
+    background: #0f0f0f; /* Fondo muy oscuro para resaltar la cara */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow-y: hidden; /* Evitar scroll si no es necesario */
+}
+
+/* Hacemos el video/imagen más grande en fullscreen */
+.viewer-card:fullscreen .viewer-container {
+    height: 85vh; /* Ocupa el 85% de la altura de la pantalla */
+    width: auto;
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/* Ajustamos el slider para que se vea bien abajo */
+.viewer-card:fullscreen .slider-row {
+    width: 80%;
+    margin-top: 20px;
+}

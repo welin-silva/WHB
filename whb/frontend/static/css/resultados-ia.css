@@ -1,0 +1,33 @@
+/*********************************
+ * ESTILOS DE ANÁLISIS IA        *
+ *********************************/
+.resultado-text { font-size: 0.86rem; color: #d3d3e0; }
+.resultado-text ul { padding-left: 18px; margin: 6px 0 0; }
+
+#initialMessage p { line-height: 1.4; }
+#initialMessage p:first-child { color: #ff9900; margin-bottom: 0; }
+
+.analysis-title {
+    font-size: 0.95rem; font-weight: 600; margin: 12px 0 8px;
+    color: #00ffc8; border-bottom: 1px solid rgba(0, 255, 200, 0.2); padding-bottom: 4px;
+}
+
+.analysis-grid { display: flex; flex-direction: column; gap: 12px; }
+
+.analysis-item {
+    display: flex; justify-content: space-between; 
+    font-size: 0.9rem; padding-right: 10px;
+}
+
+.analysis-item .metric { font-weight: 400; color: #b0b0c2; flex-basis: 65%; }
+.analysis-item .value { font-weight: 700; text-align: right; }
+
+.result-warning { color: #ff9900; }
+.result-critical { color: #ff2d8f; }
+
+.simple-list {
+    list-style: none; padding: 0; margin-top: 8px;
+    font-size: 0.85rem; line-height: 1.6;
+}
+.simple-list li { color: #d3d3e0; }
+.simple-list li strong { color: #ffffff; }

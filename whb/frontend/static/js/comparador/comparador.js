@@ -11,6 +11,10 @@ const divider = document.getElementById("divider");
 const noImageText = document.getElementById("noImageText");
 const compareSlider = document.getElementById("compareSlider");
 
+// Referencias para Pantalla Completa (Movidas aquí arriba para usarlas en las funciones)
+const btnFullscreen = document.getElementById("btnFullscreen");
+const cardElement = document.getElementById("cardToFullscreen");
+
 // Estado interno visual
 let visualLastDataUrl = null;
 let visualCurrentPid = null;
@@ -85,10 +89,15 @@ function aplicarFiltroInterno() {
  */
 window.cargarImagenEnComparador = function(dataUrl) {
     visualLastDataUrl = dataUrl;
+    
     // Si el video estaba encendido, apagarlo para ahorrar recursos (opcional)
     if(streamActivo) {
         // streamActivo.getTracks().forEach(track => track.stop());
     }
+
+    // NUEVO: Mostrar el botón de pantalla completa al cargar imagen
+    if (btnFullscreen) btnFullscreen.style.display = "flex";
+
     aplicarFiltroInterno();
 };
 
@@ -118,6 +127,9 @@ window.iniciarCamaraYCapturar = async function(onCaptureCallback) {
         streamActivo = await navigator.mediaDevices.getUserMedia({ video: true });
         videoEl.srcObject = streamActivo;
         videoEl.style.display = "block";
+        
+        // NUEVO: Mostrar el botón de pantalla completa al activar la cámara
+        if (btnFullscreen) btnFullscreen.style.display = "flex";
         
         // Definir qué pasa al hacer click en el video
         videoEl.onclick = () => {
@@ -149,9 +161,6 @@ window.iniciarCamaraYCapturar = async function(onCaptureCallback) {
 // ==========================================
 // PANTALLA COMPLETA (FULLSCREEN)
 // ==========================================
-const btnFullscreen = document.getElementById("btnFullscreen");
-const cardElement = document.getElementById("cardToFullscreen");
-
 if (btnFullscreen && cardElement) {
     btnFullscreen.addEventListener("click", () => {
         if (!document.fullscreenElement) {

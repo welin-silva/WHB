@@ -15,7 +15,7 @@ app = Flask(
 )
 
 # -----------------------------
-# Productos MartiDerm (los de tu imagen)
+# Productos WHB (los de tu imagen)
 # -----------------------------
 MARTIDERM_PRODUCTS = [
     {

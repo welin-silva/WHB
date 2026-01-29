@@ -1,0 +1,27 @@
+<div class="viewer-card" id="cardToFullscreen"> 
+    <h2>Vista previa y comparador</h2>
+    
+    <button id="btnFullscreen" class="fullscreen-btn" title="Pantalla Completa">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+        </svg>
+    </button>
+
+    <div class="viewer-container">
+        <video id="video" autoplay playsinline></video>
+        <div id="compareWrapper" class="compare-wrapper">
+            <img id="imgOriginal" class="img-layer" alt="Original">
+            <img id="imgFiltered" class="img-layer top-layer" alt="Con crema">
+            <div class="compare-divider" id="divider"></div>
+        </div>
+        <div id="noImageText" class="no-image-text">
+            Todavía no hay imagen. Activa la cámara o sube una foto.
+        </div>
+    </div>
+    <div class="slider-row">
+        <label for="compareSlider">Desliza para ver media cara con crema:</label>
+        <input type="range" id="compareSlider" min="0" max="100" value="50">
+    </div>
+    
+    {% include 'componentes/carrousel.html' %}
+</div>

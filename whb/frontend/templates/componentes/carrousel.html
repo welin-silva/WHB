@@ -1,0 +1,21 @@
+<div class="carousel-section">
+    <h2 style="text-align: center; color: #ff4ec4; margin-bottom: 20px;">
+        Cremas WHB recomendadas
+    </h2>
+    
+    <div id="drag-container">
+        <div id="spin-container">
+            {% for p in productos %}
+            <div class="card-3d" onclick="selectProduct('{{ p.id }}')">
+                <img src="{{ p.imagen_url }}" alt="{{ p.nombre }}">
+                <div class="card-3d-text">
+                    <span class="p-name">{{ p.nombre }}</span>
+                </div>
+            </div>
+            {% endfor %}
+            
+            <p>WHB</p>
+        </div>
+        <div id="ground"></div>
+    </div>
+</div>

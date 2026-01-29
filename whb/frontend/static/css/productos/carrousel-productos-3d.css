@@ -1,0 +1,71 @@
+/* =========================================================
+ESTILOS CARRUSEL 3D (VERSIÓN MEDIANA - FUERA DEL VISOR)
+========================================================= */
+
+.carousel-section {
+    height: 500px; position: relative;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    overflow: hidden; margin-top: 20px; perspective: 1000px;
+}
+
+#drag-container, #spin-container {
+    position: relative; display: flex; margin: auto;
+    transform-style: preserve-3d; transform: rotateX(-10deg);
+}
+
+/* --- TARJETAS MÁS PEQUEÑAS --- */
+.card-3d {
+    position: absolute; left: 0; top: 0; width: 140px; height: 190px; 
+    background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px; display: flex; flex-direction: column;
+    align-items: center; justify-content: space-between; padding: 10px; cursor: grab;
+    -webkit-box-reflect: below 8px linear-gradient(transparent, transparent, #0004);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card-3d:active { cursor: grabbing; }
+
+.card-3d:hover {
+    box-shadow: 0 0 15px #ff4ec4; border-color: #ff4ec4;
+    transform: scale(1.08); background: rgba(255, 255, 255, 0.2);
+}
+
+/* IMAGEN DEL PRODUCTO */
+.card-3d img {
+    width: 100%; height: 70%; object-fit: contain; background: #fff; 
+    border-radius: 4px; pointer-events: none;
+}
+
+/* TEXTO DEL PRODUCTO */
+.card-3d-text {
+    height: 25%; width: 100%; display: flex; align-items: center; 
+    justify-content: center; text-align: center;
+}
+
+.p-name {
+    font-size: 0.7rem; color: #fff; font-weight: 600; line-height: 1.1; pointer-events: none;
+}
+
+/* TEXTO CENTRAL FLOTANTE MÁS PEQUEÑO */
+#spin-container p {
+    font-family: Serif; position: absolute; top: 100%; left: 50%;
+    transform: translate(-50%, -50%) rotateX(90deg);
+    color: #fff; font-size: 2em; opacity: 0.4; pointer-events: none;
+}
+
+/* SUELO BRILLANTE MÁS PEQUEÑO */
+#ground {
+    width: 800px; height: 800px; position: absolute; top: 100%; left: 50%;
+    transform: translate(-50%, -50%) rotateX(90deg);
+    background: radial-gradient(center center, farthest-side, #9993, transparent); pointer-events: none;
+}
+
+/* ANIMACIONES */
+@keyframes spin { 
+    from{ transform: rotateY(0deg); } 
+    to{ transform: rotateY(360deg); } 
+}
+@keyframes spinRevert { 
+    from{ transform: rotateY(360deg); } 
+    to{ transform: rotateY(0deg); } 
+}

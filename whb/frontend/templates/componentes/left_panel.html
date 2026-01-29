@@ -1,0 +1,37 @@
+<section class="left-panel">
+    <div class="card">
+        <h2>¿Cómo quieres empezar?</h2>
+        <p class="small">
+            1. Haz un selfie o sube una foto.<br>
+            2. La IA analiza tu piel y te marca los puntos a mejorar.<br>
+            3. Prueba cada crema con el comparador de media cara.
+        </p>
+
+        <div class="button-group">
+            <button class="btn btn-primary" id="btnSelfie">Modo selfie</button>
+            <label for="fileInput" class="btn btn-secondary">Subir foto</label>
+            <input type="file" id="fileInput" accept="image/*" hidden>
+            <button class="btn btn-secondary" id="btnModelo">Usar modelo</button>
+        </div>
+        <div class="note">El navegador te pedirá permiso para usar la cámara (getUserMedia).</div>
+    </div>
+
+    <div class="card" id="analysisCard">
+        <h2>Primera valoración de tu piel</h2>
+        <div id="resultado" class="resultado-text">
+            <div id="initialMessage">
+                <p style="margin: 0; font-weight: 600;">Modo Inactivo</p>
+                <p class="small" style="margin-top: 5px;">
+                    Para empezar el análisis con IA, pulsa "Modo selfie" o sube tu imagen.
+                    Aquí verás las **6 métricas clave** de tu piel.
+                </p>
+            </div>
+            <div id="iaResults" style="display: none;">
+                <h3 class="analysis-title">Puntos Clave Detectados</h3>
+                <div class="analysis-grid" id="analysisDataGrid"></div>
+                <h3 class="analysis-title">Resumen de Recomendaciones</h3>
+                <ul class="simple-list" id="recommendationSummary"></ul>
+            </div>
+        </div>
+    </div>
+</section>

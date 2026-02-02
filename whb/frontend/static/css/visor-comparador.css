@@ -31,51 +31,129 @@
     font-size: 0.9rem; color: #a4a4bc; padding: 0 18px; text-align: center;
 }
 
-.slider-row { margin-top: 10px; font-size: 0.82rem; color: #c1c1d4; }
-#compareSlider { width: 100%; margin-top: 4px; }
-
-/* --- BOTÓN DE PANTALLA COMPLETA --- */
+/* --- BOTÓN DE PANTALLA COMPLETA (RECUPERADO) --- */
 .fullscreen-btn {
     position: absolute; top: 20px; right: 20px;
     background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(255, 255, 255, 0.2);
     color: white; border-radius: 8px; width: 40px; height: 40px;
     cursor: pointer; z-index: 100;
     
-    display: none;
-    
+    /* Flex para centrar el icono */
+    display: flex; 
     align-items: center; justify-content: center;
     transition: all 0.3s ease;
 }
 .fullscreen-btn:hover {
-    background: #ff4ec4; border-color: #ff4ec4; transform: scale(1.1);
+    background: #E0CD95; border-color: #E0CD95; color: #000; transform: scale(1.1);
 }
+
+/* --- BARRA DESLIZANTE --- */
+.slider-row {
+    /* POR DEFECTO: Oculto (lo activaremos con JS) */
+    display: none;
+    
+    /* DISEÑO CUANDO APAREZCA */
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    max-width: 600px;
+    margin: 15px auto 0; /* Centrado horizontal */
+    
+    font-size: 0.85rem; 
+    color: #c1c1d4;
+    
+    /* ASEGURAR QUE SE VEA ENCIMA DE TODO */
+    z-index: 9999;
+    position: relative;
+}
+
+#compareSlider { width: 100%; margin-top: 8px; cursor: pointer; }
+
 
 /*********************************
- * BARRA DE MINIATURAS (OVERLAY) *
+ * NUEVA BARRA DE PRODUCTOS      *
  *********************************/
-.thumbnails-overlay {
-    position: absolute; bottom: 0; left: 0; width: 100%; height: 80px; 
-    background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.4));
-    display: flex; align-items: center; gap: 12px; padding: 0 16px;
-    overflow-x: auto; z-index: 20; backdrop-filter: blur(4px);
+.products-strip-container {
+    margin-top: 20px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 15px;
+    text-align: center;
 }
 
-.thumbnails-overlay::-webkit-scrollbar { height: 4px; }
-.thumbnails-overlay::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2); border-radius: 4px;
+.products-strip-container h3 {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    text-align: center; 
+    margin: 0 0 15px 0;
+    font-weight: 500;
 }
 
-.thumb-item {
-    min-width: 60px; width: 60px; height: 60px;
-    border-radius: 8px; overflow: hidden; cursor: pointer;
-    border: 2px solid rgba(255, 255, 255, 0.3); transition: all 0.2s ease;
-    flex-shrink: 0; 
+.products-strip {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    justify-content: center; 
+    scroll-behavior: smooth;
+    scrollbar-width: thin; 
+    scrollbar-color: #27272a transparent;
 }
-.thumb-item img { width: 100%; height: 100%; object-fit: cover; }
-.thumb-item:hover {
-    transform: translateY(-3px); border-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+
+.products-strip::-webkit-scrollbar { height: 6px; }
+.products-strip::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+
+/* MINIATURA DEL PRODUCTO */
+.product-thumb {
+    flex: 0 0 100px; 
+    background: #1e1e24;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-top: 5px;
 }
-.thumb-item.active {
-    border-color: #ff2d8f; box-shadow: 0 0 10px rgba(255, 45, 143, 0.6);
+
+.product-thumb:hover { background: #27272a; transform: translateY(-2px); }
+
+.product-thumb.active {
+    border-color: #E0CD95; 
+    background: #2a2a30;
+    box-shadow: 0 0 15px rgba(224, 205, 149, 0.2);
+}
+
+.thumb-img {
+    width: 100%; height: 70px;
+    background: #fff; border-radius: 8px;
+    margin-bottom: 8px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+}
+
+.thumb-img img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+.thumb-name {
+    font-size: 0.7rem; 
+    color: #cbd5e1; 
+    line-height: 1.2;
+    
+    /* Lógica de truncado de texto */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;        /* Compatibilidad actual (Chrome, Safari, Edge, Firefox) */
+    line-clamp: 2;                /* Estándar oficial (para el futuro) */
+    -webkit-box-orient: vertical; 
+    overflow: hidden;
+}
+
+.product-thumb.active .thumb-name { color: #E0CD95; font-weight: 700; }
+
+@media (max-width: 600px) {
+    .products-strip {
+        justify-content: flex-start; 
+        padding-left: 20px; padding-right: 20px;
+    }
 }

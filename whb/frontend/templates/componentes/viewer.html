@@ -8,28 +8,43 @@
     </button>
 
     <div class="viewer-container">
-        <video id="video" autoplay playsinline></video>
+        <video id="video" class="img-layer" style="object-fit: cover; z-index: 1;" autoplay playsinline></video>
         
-        <div id="compareWrapper" class="compare-wrapper">
+        <video id="videoFiltered" class="img-layer top-layer" style="object-fit: cover; z-index: 2;" autoplay playsinline></video>
+
+        <div id="compareWrapper" class="compare-wrapper" style="z-index: 3;">
             <img id="imgOriginal" class="img-layer" alt="Original">
             <img id="imgFiltered" class="img-layer top-layer" alt="Con crema">
-            <div class="compare-divider" id="divider"></div>
         </div>
 
-        <div id="noImageText" class="no-image-content">
+        <div class="compare-divider" id="divider" style="z-index: 10; display: none;"></div>
+
+        <div id="noImageText" class="no-image-content" style="z-index: 20;">
             <p>Todavía no hay imagen</p>
-            
             <div class="center-actions">
-                <button id="btnSelfieCenter" class="btn btn-primary">Modo selfie</button>
-                
+                <button id="btnSelfieCenter" class="btn btn-primary" onclick="iniciarCamaraYCapturar()">Modo selfie</button>
                 <input type="file" id="fileInputCenter" accept="image/*" hidden>
                 <label for="fileInputCenter" class="btn btn-secondary">Subir foto</label>
             </div>
         </div>
     </div>
 
-    <div class="slider-row">
-        <label for="compareSlider">Desliza para ver media cara con crema:</label>
+    <div class="slider-row" id="mainSliderRow" style="display: none;">
+        <label for="compareSlider">Desliza para ver el efecto:</label>
         <input type="range" id="compareSlider" min="0" max="100" value="50">
+    </div>
+
+    <div class="products-strip-container">
+        <h3>Selecciona un tratamiento:</h3>
+        <div class="products-strip">
+            {% for p in productos %}
+            <div class="product-thumb" data-product-id="{{ p.id }}">
+                <div class="thumb-img">
+                    <img src="{{ p.imagen_url }}" alt="{{ p.nombre }}">
+                </div>
+                <span class="thumb-name">{{ p.nombre }}</span>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 </div>

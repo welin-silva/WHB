@@ -1,104 +1,100 @@
 /* ======================================================
-   MODO PANTALLA COMPLETA (FULLSCREEN OVERRIDES)
+   MODO PANTALLA COMPLETA (FULLSCREEN) - CORREGIDO
    ====================================================== */
 
-/* 1. Contenedor Principal en Fullscreen */
 .viewer-card:fullscreen {
     background: #050711; 
-    display: flex; flex-direction: column;
-    justify-content: flex-start; 
-    align-items: center; padding: 20px;
-    
-    /* Mantenemos el scroll por si la pantalla es muy pequeña, 
-       pero ocultamos la barra visualmente abajo */
+    display: flex; 
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; 
+    padding: 20px;
     overflow-y: auto; 
-    scrollbar-width: none; /* Ocultar barra en Firefox */
 }
 
-/* Ocultar barra en Chrome, Safari y Edge */
-.viewer-card:fullscreen::-webkit-scrollbar {
-    display: none;
-}
-
+/* Ocultamos el título H2 y el botón de pantalla completa */
 .viewer-card:fullscreen h2,
-.viewer-card:fullscreen #btnFullscreen { display: none; }
+.viewer-card:fullscreen #btnFullscreen { 
+    display: none; 
+}
 
-/* 2. Área de la Imagen/Video */
 .viewer-card:fullscreen .viewer-container {
-    width: 100%; max-width: 1200px;
-    
-    /* REDUCCIÓN: Bajamos de 65vh a 55vh para dejar espacio a los productos 
-       sin que salga scroll */
+    width: 100%; 
+    max-width: 1000px;
     height: 55vh; 
-    
-    margin-bottom: 10px; border: none; background: transparent;
-}
-
-.viewer-card:fullscreen .slider-row { width: 60%; margin-bottom: 10px; }
-
-/* ======================================================
-   TRANSFORMACIÓN DEL CARRUSEL 3D A FILA PLANA 2D
-   ====================================================== */
-
-/* 3. Contenedor del Carrusel en Fullscreen */
-.viewer-card:fullscreen .carousel-section {
-    width: 100%; height: auto;
-    
-    /* AJUSTE: 40px es suficiente para que no se corte el texto 
-       y no empuje demasiado hacia abajo */
-    margin-top: 40px !important; 
-    
-    overflow: visible !important;
-    padding-bottom: 30px;
-}
-
-.viewer-card:fullscreen .carousel-section h2 {
-    display: block !important; 
-    font-size: 1.4rem; 
     margin-bottom: 25px; 
-    color: #ff4ec4; 
+    border: none; 
+    background: transparent;
+}
+
+/* --- BARRA DESLIZANTE --- */
+.viewer-card:fullscreen .slider-row {
+    width: 80%; 
+    max-width: 600px;
+    margin-bottom: 30px;
+    z-index: 2147483647;
+    position: relative; 
+    display: flex;
+    color: #ffffff; 
+    text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+}
+
+/* Estilo del input range */
+.viewer-card:fullscreen #compareSlider {
+    accent-color: #E0CD95;
+    cursor: grab;
+    height: 6px;
+}
+
+/* --- BARRA DE PRODUCTOS --- */
+.viewer-card:fullscreen .products-strip-container {
+    width: 100%;
+    max-width: 900px;
+    border-top: none; 
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.viewer-card:fullscreen .products-strip-container h3 {
     text-align: center;
+    color: #94a3b8;
+    margin-bottom: 15px;
+    font-size: 1rem;
 }
 
-/* 4. Aplanar el contenedor 3D */
-.viewer-card:fullscreen #drag-container,
-.viewer-card:fullscreen #spin-container {
-    position: relative !important; display: flex !important;
-    flex-wrap: wrap !important; 
-    justify-content: center !important; align-items: center !important;
-    
-    transform: none !important; 
-    animation: none !important;
-    perspective: none !important; 
-    transform-style: flat !important;
-    transition: none !important; 
-    
-    width: 100% !important; height: auto !important; margin: 0 !important; padding: 0 !important;
+.viewer-card:fullscreen .products-strip {
+    justify-content: center;
+    padding-bottom: 20px;
+    gap: 15px;
 }
 
-.viewer-card:fullscreen #ground { display: none !important; }
-
-/* 5. Estilo de las Tarjetas de Producto */
-.viewer-card:fullscreen .card-3d {
-    position: relative !important; top: auto !important; left: auto !important;
-    transform: none !important; 
-    transition: none !important;
-    
-    /* Tamaño fijo para que queden alineadas */
-    width: 140px !important; height: 190px !important; margin: 10px !important;
-    
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: none !important;
-    -webkit-box-reflect: unset !important;
+@media (max-width: 600px) {
+    .viewer-card:fullscreen .products-strip {
+        justify-content: flex-start;
+        padding-left: 20px; 
+        padding-right: 20px;
+    }
 }
 
-.viewer-card:fullscreen .card-3d:hover {
-    background: rgba(255, 45, 143, 0.2); border-color: #ff2d8f;
-    transform: translateY(-5px) !important; 
+.viewer-card:fullscreen .product-thumb {
+    background: rgba(255, 255, 255, 0.08); 
+    border-color: rgba(255, 255, 255, 0.2);
+    width: 110px;
 }
 
-.viewer-card:fullscreen .card-3d img { width: 100%; height: 70%; object-fit: contain; }
-.viewer-card:fullscreen .card-3d-text {
-    position: absolute; bottom: 10px; width: 100%; text-align: center;
+.viewer-card:fullscreen .product-thumb:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-5px);
+}
+
+.viewer-card:fullscreen .product-thumb.active {
+    background: #2a2a30;
+    border-color: #E0CD95; 
+    box-shadow: 0 0 20px rgba(224, 205, 149, 0.3);
+    transform: scale(1.1);
+}
+
+.viewer-card:fullscreen .product-thumb.active .thumb-name {
+    color: #E0CD95;
+    font-weight: bold;
 }

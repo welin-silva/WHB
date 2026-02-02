@@ -115,6 +115,29 @@ ESTILOS CARRUSEL 3D (VERSIÓN FINAL - SIN CORTES Y COLOR ORO)
     pointer-events: none;
 }
 
+/* --- ESTADO ACTIVO (Producto Seleccionado) --- */
+.card-3d.selected {
+    box-shadow: 0 0 25px rgba(224, 205, 149, 0.6) !important; 
+    border-color: #E0CD95 !important;
+    background: rgba(60, 60, 65, 0.9) !important;
+    transform: scale(1.15) translateZ(30px) !important;
+    z-index: 200 !important;
+}
+
+/* Pequeño indicador visual de "Seleccionado" */
+.card-3d.selected::after {
+    content: "APLICADO";
+    position: absolute;
+    top: -12px;
+    background: #E0CD95;
+    color: #000;
+    font-size: 0.6rem;
+    font-weight: 800;
+    padding: 4px 8px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+}
+
 /* ANIMACIONES */
 @keyframes spin { 
     from{ transform: rotateY(0deg); } 

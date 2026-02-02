@@ -114,9 +114,12 @@ window.cambiarProductoVisual = function(productId) {
  * @param {Function} onCaptureCallback - Función que se ejecuta al tener la foto
  */
 window.iniciarCamaraYCapturar = async function(onCaptureCallback) {
-    // UI Setup
+    // 1. Limpieza inicial de UI
     compareWrapper.style.display = "none";
-    noImageText.style.display = "block";
+    
+    // IMPORTANTE: No mostramos 'noImageText' aquí todavía porque 
+    // si la cámara tarda en cargar, se verían los botones superpuestos.
+    // Lo ocultaremos definitivamente cuando arranque el video.
     
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         alert("Tu navegador no soporta acceso a cámara");
@@ -126,9 +129,12 @@ window.iniciarCamaraYCapturar = async function(onCaptureCallback) {
     try {
         streamActivo = await navigator.mediaDevices.getUserMedia({ video: true });
         videoEl.srcObject = streamActivo;
-        videoEl.style.display = "block";
         
-        // NUEVO: Mostrar el botón de pantalla completa al activar la cámara
+        // 2. CAMBIO CLAVE: Al tener vídeo, mostramos vídeo y ocultamos botones
+        videoEl.style.display = "block";
+        noImageText.style.display = "none"; // <--- ESTO SOLUCIONA EL ERROR
+        
+        // Mostrar botón fullscreen
         if (btnFullscreen) btnFullscreen.style.display = "flex";
         
         // Definir qué pasa al hacer click en el video
@@ -146,6 +152,10 @@ window.iniciarCamaraYCapturar = async function(onCaptureCallback) {
             
             // Guardar imagen y mostrarla
             visualLastDataUrl = dataUrl;
+            
+            // Detener la cámara una vez hecha la foto (Opcional, ahorra batería)
+            // streamActivo.getTracks().forEach(track => track.stop());
+
             aplicarFiltroInterno();
 
             // Devolver la imagen al controlador principal (whb.js)
@@ -154,7 +164,10 @@ window.iniciarCamaraYCapturar = async function(onCaptureCallback) {
 
     } catch (err) {
         console.error("Error cámara:", err);
-        alert("No se pudo acceder a la cámara.");
+        alert("No se pudo acceder a la cámara. Revisa los permisos.");
+        
+        // Si falla, volvemos a mostrar los botones para que el usuario pueda reintentar
+        noImageText.style.display = "flex"; 
     }
 };
 

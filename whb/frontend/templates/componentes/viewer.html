@@ -9,19 +9,27 @@
 
     <div class="viewer-container">
         <video id="video" autoplay playsinline></video>
+        
         <div id="compareWrapper" class="compare-wrapper">
             <img id="imgOriginal" class="img-layer" alt="Original">
             <img id="imgFiltered" class="img-layer top-layer" alt="Con crema">
             <div class="compare-divider" id="divider"></div>
         </div>
-        <div id="noImageText" class="no-image-text">
-            Todavía no hay imagen. Activa la cámara o sube una foto.
+
+        <div id="noImageText" class="no-image-content">
+            <p>Todavía no hay imagen</p>
+            
+            <div class="center-actions">
+                <button id="btnSelfieCenter" class="btn btn-primary">Modo selfie</button>
+                
+                <input type="file" id="fileInputCenter" accept="image/*" hidden>
+                <label for="fileInputCenter" class="btn btn-secondary">Subir foto</label>
+            </div>
         </div>
     </div>
+
     <div class="slider-row">
         <label for="compareSlider">Desliza para ver media cara con crema:</label>
         <input type="range" id="compareSlider" min="0" max="100" value="50">
     </div>
-    
-    {% include 'componentes/carrousel.html' %}
 </div>

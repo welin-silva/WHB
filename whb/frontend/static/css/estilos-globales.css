@@ -6,27 +6,41 @@
 body {
     margin: 0;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro", sans-serif;
-    color: #f5f5f5;
-    background: #050711;
+    color: #1e293b; 
+    /* ZONA 1: El fondo base del navegador será el Beige */
+    background: #E0CD95; 
     min-height: 100vh;
 }
 
 /*********************************
  * 2. FONDO Y WRAPPER            *
  *********************************/
+/* ZONA 1: FONDO GLOBAL (El Beige #E0CD95) */
 .bg-futuristic {
     position: fixed; inset: 0;
-    background-color: white;
-    opacity: 0.9; z-index: -2;
+    z-index: -2;
+    background-color: #E0CD95; /* Color BEIGE solicitado */
+    
+    /* Un degradado muy sutil para que el beige tenga volumen y parezca "seda" */
+    background-image: 
+        radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.4) 0%, transparent 50%),
+        linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.05) 100%);
 }
 
+/* ZONA 2: EL "CUADRO" PRINCIPAL (Blanco Crema) */
 .app-wrapper {
     max-width: 90vw; margin: 30px auto;
     padding: 16px 20px 32px;
-    backdrop-filter: blur(14px);
-    background: linear-gradient(to bottom, #ffffff 0%, rgba(7, 8, 22, 0.95) 100%);
+    
+    /* Fondo blanco crema limpio para el laboratorio */
+    background: #FDFCF8; 
+    
+    /* Sombra fuerte para separar el cuadro blanco del fondo beige */
+    box-shadow: 0 30px 60px rgba(15, 23, 42, 0.15);
+    
     border-radius: 24px;
-    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.7);
+    /* Borde muy fino azulado para definir */
+    border: 1px solid rgba(15, 23, 42, 0.05);
     min-height: 95vh;
 }
 
@@ -41,7 +55,7 @@ body {
     gap: 20px;
     margin-bottom: 20px;
     padding-bottom: 15px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    border-bottom: 1px solid rgba(15, 23, 42, 0.05);
 }
 
 .logo {
@@ -50,7 +64,8 @@ body {
     flex-shrink: 0; 
     border-radius: 18px; 
     object-fit: cover;
-    background-color: #fff;
+    border: none;
+    background-color: transparent; 
 }
 
 .header-text {
@@ -60,11 +75,13 @@ body {
     text-align: center;
 }
 
+/* Título principal de la APP (sobre fondo blanco) */
 .header-text h1 {
     margin: 0 0 4px 0;
     font-size: 1.25rem;
     font-weight: 700;
-    color: #1a1a2e;
+    /* Usamos el Azul Noche para texto sobre fondo blanco */
+    color: #0F172A; 
 }
 
 .header-text p {
@@ -72,7 +89,7 @@ body {
     font-size: 0.9rem;
     opacity: 0.85;
     line-height: 1.4;
-    color: #3a3a4d;
+    color: #475569; 
     max-width: 600px;
 }
 
@@ -84,133 +101,200 @@ body {
 }
 
 /*********************************
- * 4. LAYOUT PRINCIPAL (GRID)    *
+ * 4. LAYOUT Y APARTADOS (ZONA 3)*
  *********************************/
 .app-main {
     display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 40px; 
 }
 
+/* ZONA 3: FONDOS DE CADA APARTADO (Azul Noche Oscuro) */
 .card, .viewer-card, .products-card {
-    background: rgba(7, 8, 22, 0.95);
-    border-radius: 18px; padding: 16px 14px; 
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    /* CAMBIO: "Negro Carbón" (Zinc oscuro). 
+       Es neutro, potente y hace que el beige parezca ORO. */
+    background: #18181b; 
+    
+    border-radius: 20px; 
+    padding: 20px; 
+    margin-top: 20px;
+    
+    /* Borde muy sutil en beige para conectarlo con el fondo */
+    border: 1px solid rgba(224, 205, 149, 0.15);
+    
+    /* Sombra negra suave para dar profundidad */
+    box-shadow: 0 15px 40px -10px rgba(0, 0, 0, 0.3);
+    
+    /* Texto blanco puro para máxima legibilidad */
+    color: #ffffff; 
 }
 
+/* Títulos color Beige (Aquí es donde se crea el efecto ORO) */
 .card h2, .viewer-card h2, .products-card h2 {
-    font-size: 1.4rem; font-weight: 700; margin: 0 0 4px; 
+    font-size: 1.4rem; 
+    font-weight: 700; 
+    margin: 0 0 10px;
+    color: #E0CD95; /* Tu beige sobre negro = Lujo total */
 }
 
-.small { font-size: 0.85rem; color: #b0b0c2; }
+.small { font-size: 0.85rem; color: #94a3b8; } 
 .products-card p.small { margin-bottom: 15px; }
 
 /*********************************
  * 5. ESTILOS DE BOTONES         *
  *********************************/
 .btn {
-    width: 100%; border-radius: 999px; padding: 10px 0; border: none;
-    font-size: 0.9rem; margin-top: 10px; cursor: pointer;
-    transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.15s ease;
+    /* PROPIEDADES CLAVE PARA ARREGLAR EL LABEL */
+    display: block;          /* 1. Hace que el label se comporte como una caja (botón) */
+    width: 100%;             /* 2. Ocupa todo el ancho disponible */
+    box-sizing: border-box;  /* 3. Asegura que el padding no rompa el tamaño */
+    text-align: center;      /* 4. Centra el texto (los labels no lo hacen por defecto) */
+    cursor: pointer;         /* 5. Pone la manita al pasar el ratón */
+    
+    /* ESTÉTICA COMÚN */
+    border-radius: 999px; 
+    padding: 12px 0; 
+    border: none; /* Se sobrescribe en el secundario */
+    font-size: 0.9rem; 
+    margin-top: 10px; 
+    font-family: inherit;
+    transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s ease;
 }
 
+/* BOTÓN PRINCIPAL (Beige) */
 .btn-primary {
-    background: linear-gradient(135deg, #ff2d8f, #ff4ec4);
-    color: #fff; font-weight: 600; box-shadow: 0 8px 18px rgba(255, 77, 172, 0.45);
+    background: #E0CD95; 
+    color: #0F172A; 
+    font-weight: 700; 
+    box-shadow: 0 4px 15px rgba(224, 205, 149, 0.3);
 }
 
+.btn-primary:hover {
+    transform: translateY(-2px);
+    background: #ebdca5; 
+    box-shadow: 0 8px 20px rgba(224, 205, 149, 0.5);
+}
+
+/* BOTÓN SECUNDARIO (Arreglado para Subir Foto) */
 .btn-secondary {
-    background: #1b1c2a; color: #f5f5f5; display: block; text-align: center; 
+    /* Gris oscuro neutro que destaca sobre el fondo negro */
+    background: #27272a; 
+    color: #f1f5f9; 
+    
+    /* Borde sutil para definir la forma */
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-.btn:hover { transform: translateY(-1px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35); }
-
-.button-group .btn { margin-top: 4px; }
-.button-group .btn:first-child { margin-top: 4px; }
-
-.note {
-    margin-top: 14px; font-size: 0.78rem; color: #8e8ea3;
-    border-top: 1px dashed rgba(255, 255, 255, 0.05); padding-top: 8px;
+.btn-secondary:hover {
+    background: #3f3f46; 
+    /* Detalle de lujo: el borde se pone beige al pasar el mouse */
+    border-color: rgba(224, 205, 149, 0.4); 
+    transform: translateY(-1px);
 }
+
+/* Espaciado extra si se juntan mucho */
+.button-group .btn { margin-top: 10px; }
 
 /*********************************
- * 6. GRID DE PRODUCTOS (PILLS)  *
+ * 6. PRODUCTOS                  *
  *********************************/
 .products-grid {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
     grid-auto-rows: minmax(140px, auto); grid-auto-flow: dense; 
-    gap: 8px; margin-top: 8px;
+    gap: 12px; margin-top: 12px;
 }
 
 .product-pill {
-    background: #171726; border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.05); padding: 15px 15px 10px; 
-    text-align: left; cursor: pointer; font-size: 0.8rem; color: #f5f5ff;
+    /* Fondo: Gris Carbón (Zinc) un poco más claro que la caja principal */
+    background: #27272a; 
+    
+    border-radius: 16px;
+    /* Borde muy sutil casi invisible */
+    border: 1px solid rgba(255, 255, 255, 0.08); 
+    padding: 15px; 
+    text-align: left; cursor: pointer; font-size: 0.8rem; color: #f1f5f9;
     display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; 
-    min-height: 140px; gap: 0; 
-    transition: border 0.1s ease, background 0.1s ease, transform 0.08s ease;
+    min-height: 140px; 
+    transition: all 0.2s ease;
 }
 
 .product-pill * { pointer-events: none; }
-
-.product-pill-lg { grid-row: span 2; min-height: 290px; padding: 20px 15px; }
+.product-pill-lg { grid-row: span 2; min-height: 290px; padding: 20px; }
 
 .product-image-container {
     width: 100%; height: auto; max-height: 180px; margin-top: 10px;
     align-self: center; display: flex; justify-content: center; align-items: center;
-    overflow: hidden; flex-shrink: 0; background-color: #171726; border-radius: 4px; 
+    overflow: hidden; flex-shrink: 0; 
+    
+    /* Fondo: Negro casi puro para resaltar la foto del producto */
+    background-color: #09090b; 
+    
+    border-radius: 8px; 
     transition: background-color 0.1s ease;
 }
-
-.product-pill:hover .product-image-container { background-color: #1e1f34; }
-.product-pill:active .product-image-container { background-color: #1e1f34; }
-.product-pill.active .product-image-container { background-color: #24172a; }
 
 .product-image { width: 100%; height: 100%; object-fit: contain; }
 
 .product-details {
-    display: flex; flex-direction: column; gap: 2px; width: 100%; min-width: 0; 
+    display: flex; flex-direction: column; gap: 4px; width: 100%; min-width: 0; 
     margin-bottom: 20px; align-items: center; text-align: center; 
 }
 
-.product-name { font-weight: 600; font-size: 0.9rem; line-height: 1.3; }
-.product-beneficio { font-size: 0.75rem; color: #d0cfe9; }
+.product-name { font-weight: 600; font-size: 0.95rem; line-height: 1.3; color: #fff; }
+.product-beneficio { font-size: 0.8rem; color: #cbd5e1; }
 
+/* ESTADO HOVER (Al pasar el ratón) */
 .product-pill:hover {
-    border-color: rgba(255, 45, 143, 0.6); background-color: #1e1f34; transform: translateY(-1px);
+    /* Borde Beige brillante */
+    border-color: rgba(224, 205, 149, 0.8); 
+    /* Fondo se aclara ligeramente */
+    background-color: #2e2e33; 
+    transform: translateY(-2px);
 }
 
+/* ESTADO ACTIVO (Seleccionado) */
 .product-pill.active {
-    border-color: #ff2d8f; background: #24172a; background-color: #24172a;
+    /* Borde Beige Sólido */
+    border-color: #E0CD95; 
+    /* Fondo oscuro base */
+    background: #18181b;
+    /* Resplandor dorado lujoso */
+    box-shadow: 0 0 20px rgba(224, 205, 149, 0.2);
+}
+
+.product-pill.active .product-name {
+    /* El nombre se pone color Oro/Beige */
+    color: #E0CD95; 
 }
 
 .product-pill-lg .product-image-container { max-height: 220px; }
 .product-pill-lg .product-name { font-size: 1.2rem; }
-.product-pill-lg .product-beneficio { font-size: 0.85rem; }
+/*********************************
+ * 7. FOOTER                     *
+ *********************************/
+.app-footer { 
+    margin-top: 14px; 
+    font-size: 0.78rem; 
+    color: #64748b; 
+    text-align: right; 
+}
 
 /*********************************
- * 7. PIE DE PÁGINA (FOOTER)     *
+ * 8. MEDIA QUERIES              *
  *********************************/
-.app-footer { margin-top: 14px; font-size: 0.78rem; color: #8b8ba2; text-align: right; }
-
-/*********************************
- * 8. MEDIA QUERIES GENERALES    *
- *********************************/
-/* Tablet y Móviles (Pantallas de hasta 1024px) */
 @media (max-width: 1024px) {
     .app-main { grid-template-columns: minmax(0, 1fr); gap: 30px; }
     .app-wrapper { max-width: 95vw; min-height: auto; }
     .viewer-container { min-height: 400px; }
     .products-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); grid-auto-rows: minmax(120px, auto); }
     .product-pill { min-height: 120px; }
-    .product-pill-lg { min-height: 250px; padding: 15px 15px 10px; grid-row: span 2; }
+    .product-pill-lg { min-height: 250px; padding: 15px; grid-row: span 2; }
 }
 
-/* Móviles (Pantallas de hasta 600px) */
 @media (max-width: 600px) {
     .app-wrapper { padding: 12px 12px 20px; margin: 0; border-radius: 0; max-width: 100vw; }
     .app-header { flex-direction: column; align-items: flex-start; gap: 8px; }
     .logo { width: 40px; height: 40px; }
-    .card, .viewer-card, .products-card { padding: 12px 14px; }
+    .card, .viewer-card, .products-card { padding: 15px; }
     .viewer-container { min-height: 300px; }
-    .products-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
+    .products-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
     .header-text h1 { font-size: 1.2rem; }
 }

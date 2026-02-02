@@ -2,20 +2,30 @@
 // CONTROLADOR PRINCIPAL (Botones y Backend)
 // ==========================================
 
+// 1. Referencias a los botones DE LA IZQUIERDA (Sidebar)
 const btnSelfie = document.getElementById("btnSelfie");
 const btnModelo = document.getElementById("btnModelo");
 const fileInput = document.getElementById("fileInput");
+
+// 2. Referencias a los botones DEL CENTRO (Nuevos)
+const btnSelfieCenter = document.getElementById("btnSelfieCenter");
+const fileInputCenter = document.getElementById("fileInputCenter");
+
+// Referencias comunes
 const resultadoDiv = document.getElementById("resultado");
 const productButtons = document.querySelectorAll(".product-pill");
 
-// ---- 1. Gestión de productos (Botones de cremas) ----
+
+// ==========================================
+// A. GESTIÓN DE PRODUCTOS
+// ==========================================
 productButtons.forEach(btn => {
     btn.addEventListener("click", () => {
         // Gestión visual de los botones (clase active)
         productButtons.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
 
-        // 1. Decirle al comparador visual que cambie el filtro
+        // Decirle al comparador visual que cambie el filtro
         const pid = btn.dataset.productId;
         if (window.cambiarProductoVisual) {
             cambiarProductoVisual(pid);
@@ -23,7 +33,12 @@ productButtons.forEach(btn => {
     });
 });
 
-// ---- 2. Envío a backend para análisis ----
+
+// ==========================================
+// B. LÓGICA REUTILIZABLE (Funciones comunes)
+// ==========================================
+
+// Función 1: Analizar imagen en Backend
 async function enviarImagenParaAnalisis(dataUrl) {
     resultadoDiv.textContent = "Analizando tu piel con IA...";
     console.log("Enviando imagen al backend…");
@@ -59,7 +74,7 @@ async function enviarImagenParaAnalisis(dataUrl) {
             });
             html += "</ul>";
             
-            // Si la IA recomienda algo, activamos esa crema automáticamente en el visualizador
+            // Activar crema recomendada
             const recommendedId = data.recomendaciones[0].id;
             
             // Actualizar botones UI
@@ -80,30 +95,28 @@ async function enviarImagenParaAnalisis(dataUrl) {
     }
 }
 
-// ---- 3. Botón Modo Selfie ----
-btnSelfie.addEventListener("click", async () => {
+// Función 2: Lógica para activar cámara (Sirve para ambos botones)
+const ejecutarModoSelfie = async () => {
     resultadoDiv.textContent = "Activa la cámara y haz clic en el vídeo para capturar tu rostro.";
     
-    // Llamamos a la función del otro archivo para iniciar la webcam
-    // Le pasamos una "callback": qué hacer cuando el usuario haga clic en el video (sacar foto)
     if (window.iniciarCamaraYCapturar) {
         window.iniciarCamaraYCapturar((dataUrl) => {
-            // Esta función se ejecuta cuando se hace la foto
             enviarImagenParaAnalisis(dataUrl);
         });
     } else {
         console.error("Falta el archivo comparador.js");
     }
-});
+};
 
-// ---- 4. Botón Subir Foto ----
-fileInput.addEventListener("change", () => {
-    const file = fileInput.files[0];
+// Función 3: Lógica para subir foto (Sirve para ambos inputs)
+const ejecutarSubidaFoto = (e) => {
+    // 'e.target' es el input que disparó el evento
+    const file = e.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = e => {
-        const dataUrl = e.target.result;
+    reader.onload = evt => {
+        const dataUrl = evt.target.result;
         
         // 1. Mostrar en el comparador
         if(window.cargarImagenEnComparador) window.cargarImagenEnComparador(dataUrl);
@@ -112,24 +125,36 @@ fileInput.addEventListener("change", () => {
         enviarImagenParaAnalisis(dataUrl);
     };
     reader.readAsDataURL(file);
-});
+};
 
-// ---- 5. Botón Usar Modelo (Demo) ----
-btnModelo.addEventListener("click", () => {
-    // Generar imagen dummy (canvas gris)
-    const canvas = document.createElement("canvas");
-    canvas.width = 400; canvas.height = 500;
-    const ctx = canvas.getContext("2d");
-    const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    grad.addColorStop(0, "#666"); grad.addColorStop(1, "#444");
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    const dataUrl = canvas.toDataURL("image/png");
 
-    // 1. Mostrar en comparador
-    if(window.cargarImagenEnComparador) window.cargarImagenEnComparador(dataUrl);
-    
-    // 2. Analizar
-    enviarImagenParaAnalisis(dataUrl);
-});
+// ==========================================
+// C. ASIGNACIÓN DE EVENTOS (Listeners)
+// ==========================================
+
+// 1. Botones de la Izquierda (Sidebar)
+if(btnSelfie) btnSelfie.addEventListener("click", ejecutarModoSelfie);
+if(fileInput) fileInput.addEventListener("change", ejecutarSubidaFoto);
+
+// 2. Botones del Centro (¡LO NUEVO!)
+if(btnSelfieCenter) btnSelfieCenter.addEventListener("click", ejecutarModoSelfie);
+if(fileInputCenter) fileInputCenter.addEventListener("change", ejecutarSubidaFoto);
+
+// 3. Botón Usar Modelo (Demo)
+if(btnModelo) {
+    btnModelo.addEventListener("click", () => {
+        // Generar imagen dummy (canvas gris)
+        const canvas = document.createElement("canvas");
+        canvas.width = 400; canvas.height = 500;
+        const ctx = canvas.getContext("2d");
+        const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        grad.addColorStop(0, "#666"); grad.addColorStop(1, "#444");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        const dataUrl = canvas.toDataURL("image/png");
+
+        if(window.cargarImagenEnComparador) window.cargarImagenEnComparador(dataUrl);
+        enviarImagenParaAnalisis(dataUrl);
+    });
+}

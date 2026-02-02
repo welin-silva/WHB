@@ -111,8 +111,35 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================
-// 5. FUNCIONES GLOBALES
+// 5. FUNCIONES GLOBALES (Actualizado)
 // ==========================================
 function selectProduct(productId) {
     console.log("Producto seleccionado:", productId);
+    
+    // 1. GESTIÓN VISUAL DEL CARRUSEL (Quitar/Poner clase .selected)
+    // Buscamos todas las cartas
+    const allCards = document.querySelectorAll('.card-3d');
+    
+    allCards.forEach(card => {
+        // Quitamos la clase a todos
+        card.classList.remove('selected');
+        
+        // Si la carta tiene dentro el texto o imagen que coincida con lo que buscamos...
+        // O mejor, comparamos si el onclick tiene el ID. 
+        // TRUCO: Como el onclick está inline, buscamos el elemento que acabamos de clickar.
+        // Pero como 'selectProduct' se llama desde el HTML, es más fácil pasar 'this' 
+        // o buscar por lógica.
+        
+        // Vamos a hacerlo simple: Al hacer click, el propio evento puede manejarlo,
+        // pero como es onclick inline, buscaremos el elemento que contenga ese ID en su llamada.
+        if (card.getAttribute('onclick').includes(productId)) {
+            card.classList.add('selected');
+        }
+    });
+
+    // 2. CONECTAR CON EL COMPARADOR VISUAL
+    // Si ya tenemos foto cargada, actualizamos el filtro inmediatamente
+    if (window.cambiarProductoVisual) {
+        window.cambiarProductoVisual(productId);
+    }
 }

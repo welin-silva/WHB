@@ -17,16 +17,23 @@ const productButtons = document.querySelectorAll(".product-pill");
 
 
 // ==========================================
-// A. GESTIÓN DE PRODUCTOS
+// A. GESTIÓN DE PRODUCTOS (NUEVO SISTEMA)
 // ==========================================
-productButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-        // Gestión visual de los botones (clase active)
-        productButtons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
+// Ahora seleccionamos las miniaturas nuevas (.product-thumb)
+const productThumbs = document.querySelectorAll(".product-thumb");
 
-        // Decirle al comparador visual que cambie el filtro
-        const pid = btn.dataset.productId;
+productThumbs.forEach(thumb => {
+    thumb.addEventListener("click", () => {
+        // 1. Gestión visual (Quitar active a todos, poner al clicado)
+        productThumbs.forEach(t => t.classList.remove("active"));
+        thumb.classList.add("active");
+
+        // 2. Obtener el ID del producto
+        const pid = thumb.dataset.productId;
+        
+        console.log("Producto seleccionado:", pid);
+
+        // 3. Cambiar el filtro visualmente
         if (window.cambiarProductoVisual) {
             cambiarProductoVisual(pid);
         }

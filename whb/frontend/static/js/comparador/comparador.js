@@ -1,188 +1,173 @@
 // ==========================================
-// LÓGICA VISUAL: COMPARADOR, VIDEO Y SLIDER
+// COMPARADOR EN VIVO (REAL TIME)
 // ==========================================
 
-// 1. Referencias al DOM (Solo elementos visuales)
-const videoEl = document.getElementById("video");
-const compareWrapper = document.getElementById("compareWrapper");
+const videoOriginal = document.getElementById("video");
+const videoFiltered = document.getElementById("videoFiltered");
 const imgOriginal = document.getElementById("imgOriginal");
 const imgFiltered = document.getElementById("imgFiltered");
+const compareWrapper = document.getElementById("compareWrapper");
 const divider = document.getElementById("divider");
 const noImageText = document.getElementById("noImageText");
 const compareSlider = document.getElementById("compareSlider");
-
-// Referencias para Pantalla Completa (Movidas aquí arriba para usarlas en las funciones)
 const btnFullscreen = document.getElementById("btnFullscreen");
 const cardElement = document.getElementById("cardToFullscreen");
+const mainSliderRow = document.getElementById("mainSliderRow");
 
-// Estado interno visual
-let visualLastDataUrl = null;
 let visualCurrentPid = null;
-let streamActivo = null;
+let isVideoMode = false;
 
-// ==========================================
-// FUNCIONES DEL SLIDER (Deslizar antes/después)
-// ==========================================
+// --- 1. FUNCIÓN DE LA BARRA DESLIZANTE ---
 function updateSliderPosition(val) {
     const percent = Number(val);
-    // Recorta la imagen superior (con filtro) desde la derecha
-    imgFiltered.style.clipPath = `inset(0 ${100 - percent}% 0 0)`;
-    // Mueve la línea
-    divider.style.left = `${percent}%`;
+    const clipStyle = `inset(0 ${100 - percent}% 0 0)`;
+    
+    if(divider) divider.style.left = `${percent}%`;
+
+    if (isVideoMode) {
+        if(videoFiltered) videoFiltered.style.clipPath = clipStyle;
+    } else {
+        if(imgFiltered) imgFiltered.style.clipPath = clipStyle;
+    }
 }
 
-// Escuchar movimiento del slider
 if (compareSlider) {
-    compareSlider.addEventListener("input", (e) => {
-        updateSliderPosition(e.target.value);
-    });
-    // Inicializar al 50%
+    compareSlider.addEventListener("input", (e) => updateSliderPosition(e.target.value));
     updateSliderPosition(50);
 }
 
-// ==========================================
-// APLICACIÓN DE FILTROS (Simulación de Crema)
-// ==========================================
+// --- 2. APLICAR FILTROS (AL VIDEO O A LA FOTO) ---
 function aplicarFiltroInterno() {
-    if (!visualLastDataUrl) return;
-
-    imgOriginal.src = visualLastDataUrl;
-    imgFiltered.src = visualLastDataUrl;
-
     let filterCss = "none";
     
-    // Diccionario de filtros según ID del producto
     switch (visualCurrentPid) {
-        case "piel_apagada":
-            filterCss = "brightness(1.12) contrast(1.05) saturate(1.08)";
-            break;
-        case "manchas":
-            filterCss = "contrast(1.08) saturate(1.1)";
-            break;
-        case "arrugas":
-            filterCss = "blur(0.4px) contrast(1.03)";
-            break;
-        case "firmeza":
-            filterCss = "contrast(1.12)";
-            break;
-        case "acne":
-            filterCss = "blur(0.35px) contrast(1.05)";
-            break;
-        default:
-            filterCss = "brightness(1.05)"; // Filtro base suave
+        case "piel_apagada": filterCss = "brightness(1.15) contrast(1.1) saturate(1.1)"; break;
+        case "manchas": filterCss = "contrast(1.1) saturate(1.15) brightness(1.05)"; break;
+        case "arrugas": filterCss = "blur(0.5px) contrast(1.05) brightness(1.05)"; break;
+        case "firmeza": filterCss = "contrast(1.15)"; break;
+        case "acne": filterCss = "blur(0.4px) contrast(1.1) sepia(0.1)"; break;
+        default: filterCss = "brightness(1.05)";
+    }
+
+    if (isVideoMode) {
+        if(videoFiltered) videoFiltered.style.filter = filterCss;
+    } else {
+        if(imgFiltered) imgFiltered.style.filter = filterCss;
     }
     
-    imgFiltered.style.filter = filterCss;
-    
-    // Mostrar modo imagen, ocultar video
-    videoEl.style.display = "none";
-    noImageText.style.display = "none";
-    compareWrapper.style.display = "block";
+    if (mainSliderRow) {
+        mainSliderRow.style.display = ""; 
+        mainSliderRow.style.setProperty("display", "flex", "important");
+        mainSliderRow.style.visibility = "visible";
+        mainSliderRow.style.opacity = "1";
+        mainSliderRow.style.zIndex = "99999";
+    }
 }
 
-// ==========================================
-// FUNCIONES PÚBLICAS (Para usar desde whb.js)
-// ==========================================
-
-/**
- * Recibe la imagen en base64 y la muestra en el comparador
- */
-window.cargarImagenEnComparador = function(dataUrl) {
-    visualLastDataUrl = dataUrl;
-    
-    // Si el video estaba encendido, apagarlo para ahorrar recursos (opcional)
-    if(streamActivo) {
-        // streamActivo.getTracks().forEach(track => track.stop());
-    }
-
-    // NUEVO: Mostrar el botón de pantalla completa al cargar imagen
-    if (btnFullscreen) btnFullscreen.style.display = "flex";
-
-    aplicarFiltroInterno();
-};
-
-/**
- * Cambia el filtro visual según el producto seleccionado
- */
 window.cambiarProductoVisual = function(productId) {
     visualCurrentPid = productId;
     aplicarFiltroInterno();
 };
 
-/**
- * Inicia la webcam y configura el evento de "click" para capturar
- * @param {Function} onCaptureCallback - Función que se ejecuta al tener la foto
- */
-window.iniciarCamaraYCapturar = async function(onCaptureCallback) {
-    // 1. Limpieza inicial de UI
-    compareWrapper.style.display = "none";
+// --- 3. INICIAR CÁMARA (MODO EN VIVO) ---
+window.iniciarCamaraYCapturar = async function() {
+    isVideoMode = true; 
+
+    if(compareWrapper) compareWrapper.style.display = "none";
+    if(noImageText) noImageText.style.display = "none";
+    if(btnFullscreen) btnFullscreen.style.display = "flex";
+
+    const divider = document.getElementById("divider");
+    const mainSliderRow = document.getElementById("mainSliderRow");
+
+    if(divider) divider.style.display = "block";
     
-    // IMPORTANTE: No mostramos 'noImageText' aquí todavía porque 
-    // si la cámara tarda en cargar, se verían los botones superpuestos.
-    // Lo ocultaremos definitivamente cuando arranque el video.
-    
+    if(mainSliderRow) {
+        mainSliderRow.style.display = "flex";
+        mainSliderRow.style.visibility = "visible";
+        mainSliderRow.style.opacity = "1";
+    }
+
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert("Tu navegador no soporta acceso a cámara");
+        alert("Tu navegador no soporta cámara");
         return;
     }
 
     try {
-        streamActivo = await navigator.mediaDevices.getUserMedia({ video: true });
-        videoEl.srcObject = streamActivo;
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         
-        // 2. CAMBIO CLAVE: Al tener vídeo, mostramos vídeo y ocultamos botones
-        videoEl.style.display = "block";
-        noImageText.style.display = "none"; // <--- ESTO SOLUCIONA EL ERROR
+        videoOriginal.srcObject = stream;
+        videoFiltered.srcObject = stream;
         
-        // Mostrar botón fullscreen
-        if (btnFullscreen) btnFullscreen.style.display = "flex";
+        videoOriginal.style.display = "block";
+        videoFiltered.style.display = "block";
         
-        // Definir qué pasa al hacer click en el video
-        videoEl.onclick = () => {
-            if (!videoEl.videoWidth) return;
-
-            // Dibujar frame en canvas invisible
-            const canvas = document.createElement("canvas");
-            canvas.width = videoEl.videoWidth;
-            canvas.height = videoEl.videoHeight;
-            const ctx = canvas.getContext("2d");
-            ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
-            
-            const dataUrl = canvas.toDataURL("image/png");
-            
-            // Guardar imagen y mostrarla
-            visualLastDataUrl = dataUrl;
-            
-            // Detener la cámara una vez hecha la foto (Opcional, ahorra batería)
-            // streamActivo.getTracks().forEach(track => track.stop());
-
-            aplicarFiltroInterno();
-
-            // Devolver la imagen al controlador principal (whb.js)
-            if (onCaptureCallback) onCaptureCallback(dataUrl);
-        };
+        aplicarFiltroInterno();
+        updateSliderPosition(50); 
+        if(compareSlider) compareSlider.value = 50;
 
     } catch (err) {
         console.error("Error cámara:", err);
-        alert("No se pudo acceder a la cámara. Revisa los permisos.");
-        
-        // Si falla, volvemos a mostrar los botones para que el usuario pueda reintentar
-        noImageText.style.display = "flex"; 
+        alert("No se pudo acceder a la cámara.");
     }
 };
 
-// ==========================================
-// PANTALLA COMPLETA (FULLSCREEN)
-// ==========================================
+// --- 4. CARGAR FOTO (POR SI ELIGEN SUBIR ARCHIVO) ---
+window.cargarImagenEnComparador = function(dataUrl) {
+    isVideoMode = false;
+    
+    const videoOriginal = document.getElementById("video");
+    const videoFiltered = document.getElementById("videoFiltered");
+    if(videoOriginal) videoOriginal.style.display = "none";
+    if(videoFiltered) videoFiltered.style.display = "none";
+    
+    const compareWrapper = document.getElementById("compareWrapper");
+    const noImageText = document.getElementById("noImageText");
+    const btnFullscreen = document.getElementById("btnFullscreen");
+    
+    if(compareWrapper) compareWrapper.style.display = "block";
+    if(noImageText) noImageText.style.display = "none";
+    if(btnFullscreen) btnFullscreen.style.display = "flex";
+
+    // ==========================================================
+    // 3. EL ARREGLO: ACTIVAR BARRA Y LÍNEA (Igual que en selfie)
+    // ==========================================================
+    const divider = document.getElementById("divider");
+    const mainSliderRow = document.getElementById("mainSliderRow");
+
+    // Mostramos la línea rosa
+    if(divider) {
+        divider.style.display = "block"; 
+        divider.style.left = "50%";
+    }
+    
+    if(mainSliderRow) {
+        mainSliderRow.style.display = "flex"; 
+        mainSliderRow.style.visibility = "visible";
+        mainSliderRow.style.opacity = "1";
+    }
+
+    const imgOriginal = document.getElementById("imgOriginal");
+    const imgFiltered = document.getElementById("imgFiltered");
+
+    if(imgOriginal) imgOriginal.src = dataUrl;
+    if(imgFiltered) {
+        imgFiltered.src = dataUrl;
+        imgFiltered.style.clipPath = "inset(0 50% 0 0)";
+    }
+    
+    const compareSlider = document.getElementById("compareSlider");
+    if(compareSlider) compareSlider.value = 50;
+    
+    aplicarFiltroInterno();
+};
+
+// Pantalla completa
 if (btnFullscreen && cardElement) {
     btnFullscreen.addEventListener("click", () => {
         if (!document.fullscreenElement) {
-            // Entrar en pantalla completa
-            cardElement.requestFullscreen().catch(err => {
-                console.error(`Error al intentar pantalla completa: ${err.message}`);
-            });
+            cardElement.requestFullscreen().catch(err => console.error(err));
         } else {
-            // Salir de pantalla completa
             document.exitFullscreen();
         }
     });

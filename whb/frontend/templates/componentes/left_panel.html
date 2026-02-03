@@ -1,33 +1,27 @@
 <section class="left-panel">
     <div class="card">
-        <h2>¿Cómo quieres empezar?</h2>
-        <p class="small">
-            1. Haz un selfie o sube una foto.<br>
-            2. La IA analiza tu piel y te marca los puntos a mejorar.<br>
-            3. Prueba cada crema con el comparador de media cara.
-        </p>
+        <h2 data-i18n="LEFT_PANEL.TITLE_START"></h2>
+        <p class="small" data-i18n="LEFT_PANEL.INSTRUCTIONS"></p>
 
         <div class="button-group">
-            <button class="btn btn-primary" id="btnSelfie">Modo selfie</button>
-            <label for="fileInput" class="btn btn-secondary">Subir foto</label>
+            <button class="btn btn-primary" id="btnSelfie" data-i18n="LEFT_PANEL.SELFIE_MODE"></button>
+            <label for="fileInput" class="btn btn-secondary" data-i18n="LEFT_PANEL.UPLOAD_PHOTO"></label>
             <input type="file" id="fileInput" accept="image/*" hidden>
         </div>
     </div>
 
     <div class="card" id="analysisCard">
-        <h2>Valoración de tu piel</h2>
+        <h2 data-i18n="LEFT_PANEL.ANALYSIS_TITLE"></h2>
         <div id="resultado" class="resultado-text">
             <div id="initialMessage">
-                <p style="margin: 0; font-weight: 600;">Modo Inactivo</p>
-                <p class="small" style="margin-top: 5px;">
-                    Para empezar el análisis con IA, pulsa "Modo selfie" o sube tu imagen.
-                    Aquí verás las **6 métricas clave** de tu piel.
+                <p style="margin: 0; font-weight: 600;" data-i18n="LEFT_PANEL.INITIAL_MESSAGE"></p>
+                <p class="small" style="margin-top: 5px;" data-i18n="LEFT_PANEL.INITIAL_SUBMESSAGE">
                 </p>
             </div>
             <div id="iaResults" style="display: none;">
-                <h3 class="analysis-title">Puntos Clave Detectados</h3>
+                <h3 class="analysis-title" data-i18n="LEFT_PANEL.ANALYSIS_POINTS_TITLE"></h3>
                 <div class="analysis-grid" id="analysisDataGrid"></div>
-                <h3 class="analysis-title">Resumen de Recomendaciones</h3>
+                <h3 class="analysis-title" data-i18n="LEFT_PANEL.RECOMMENDATIONS_TITLE"></h3>
                 <ul class="simple-list" id="recommendationSummary"></ul>
             </div>
         </div>

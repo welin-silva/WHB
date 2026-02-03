@@ -1,0 +1,37 @@
+{
+    "INDEX": {
+        "TITLE": "WHB – IA Cosmetics",
+        "TITLE2": "WHB · Skin IA Lab",
+        "SUBTITLE": "Analyze your skin in real-time, detect areas for improvement, and try WHB creams with visual simulation.",
+        "TEXT": "WHB · IA Cosmetics Project. All rights reserved. © 2024",
+        "ES": "ES",
+        "EN": "EN",
+        "CA": "CA"
+    },
+
+    "LEFT_PANEL": {
+        "TITLE_START": "How do you want to start?",
+        "INSTRUCTIONS": "1. Take a selfie or upload a photo.<br>2. The AI analyzes your skin and highlights areas for improvement.<br>3. Test each cream with the half-face comparator.",
+        "SELFIE_MODE": "Selfie Mode",
+        "UPLOAD_PHOTO": "Upload Photo",
+        "ANALYSIS_TITLE": "Your Skin Assessment",
+        "INITIAL_MESSAGE": "Inactive Mode",
+        "INITIAL_SUBMESSAGE": "To start the AI analysis, press \"Selfie Mode\" or upload your image.<br>Here you will see the **6 key metrics** of your skin.",
+        "ANALYSIS_POINTS_TITLE": "Detected Key Points",
+        "RECOMMENDATIONS_TITLE": "Summary of Recommendations"
+    },
+
+    "CARROUSEL": {
+        "TITLE": "Recommended WHB Creams",
+        "WHB": "WHB"
+    },
+
+    "VIEWER": {
+        "TITLE": "Preview and Comparator",
+        "NO_IMAGE": "No image yet",
+        "SELFIE_MODE": "Selfie Mode",
+        "UPLOAD_PHOTO": "Upload Photo",
+        "SLIDER_LABEL": "Slide to see the effect:",
+        "PRODUCTS_TITLE": "Select a treatment:"
+    }
+}

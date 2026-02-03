@@ -4,7 +4,6 @@
 
 // 1. Referencias a los botones DE LA IZQUIERDA (Sidebar)
 const btnSelfie = document.getElementById("btnSelfie");
-const btnModelo = document.getElementById("btnModelo");
 const fileInput = document.getElementById("fileInput");
 
 // 2. Referencias a los botones DEL CENTRO (Nuevos)
@@ -146,22 +145,3 @@ if(fileInput) fileInput.addEventListener("change", ejecutarSubidaFoto);
 // 2. Botones del Centro (¡LO NUEVO!)
 if(btnSelfieCenter) btnSelfieCenter.addEventListener("click", ejecutarModoSelfie);
 if(fileInputCenter) fileInputCenter.addEventListener("change", ejecutarSubidaFoto);
-
-// 3. Botón Usar Modelo (Demo)
-if(btnModelo) {
-    btnModelo.addEventListener("click", () => {
-        // Generar imagen dummy (canvas gris)
-        const canvas = document.createElement("canvas");
-        canvas.width = 400; canvas.height = 500;
-        const ctx = canvas.getContext("2d");
-        const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        grad.addColorStop(0, "#666"); grad.addColorStop(1, "#444");
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        const dataUrl = canvas.toDataURL("image/png");
-
-        if(window.cargarImagenEnComparador) window.cargarImagenEnComparador(dataUrl);
-        enviarImagenParaAnalisis(dataUrl);
-    });
-}

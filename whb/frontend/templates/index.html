@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WHB – IA Cosmética</title>
+    <title data-i18n="INDEX.TITLE"></title>
     
     <link rel="stylesheet" href="../static/css/estilos-globales.css">
     <link rel="stylesheet" href="../static/css/pantalla_completa/modo-pantalla-completa.css">
-    <link rel="stylesheet" href="../static/css/resultados-ia.css">
-    <link rel="stylesheet" href="../static/css/visor-comparador.css">
-
+    <link rel="stylesheet" href="../static/css/ia/resultados-ia.css">
+    <link rel="stylesheet" href="../static/css/comparador/visor-comparador.css">
     <link rel="stylesheet" href="../static/css/productos/carrousel.css">
     <link rel="stylesheet" href="../static/css/productos/carrousel-productos-3d.css">
     
     <link rel="icon" type="image/x-icon" href="../static/img/favicon_logo.png">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next/21.6.10/i18next.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next-http-backend/1.3.2/i18nextHttpBackend.min.js"></script>
 </head>
 <body>
 <div class="bg-futuristic"></div>
@@ -23,8 +25,16 @@
         <img src="../static/img/logo.png" alt="WHB Logo" class="logo">
         
         <div class="header-text">
-            <h1>WHB · Skin IA Lab</h1>
-            <p>Analiza tu piel en tiempo real, detecta áreas de mejora y prueba las cremas WHB con simulación visual.</p>
+            <h1 data-i18n="INDEX.TITLE2"></h1>
+            <p data-i18n="INDEX.SUBTITLE"></p>
+        </div>
+
+        <div class="lang-selector-wrapper">
+            <select id="languageSwitcher" onchange="cambiarIdioma(this.value)">
+                <option value="es" data-i18n="INDEX.ES"></option>
+                <option value="ca" data-i18n="INDEX.CA"></option>
+                <option value="en" data-i18n="INDEX.EN"></option>
+            </select>
         </div>
     </header>
 
@@ -37,12 +47,15 @@
     </main>
 
     <footer class="app-footer">
-        <span>WHB · Proyecto IA Cosmética · Demo educativa.</span>
+        <span data-i18n="INDEX.TEXT"></span>
     </footer>
 </div>
 
 <script src="/static/js/whb.js" defer></script>
 <script src="../static/js/carrusel.js"></script>
 <script src="../static/js/comparador/comparador.js"></script>
+
+<script src="../static/js/traducciones.js"></script>
+
 </body>
 </html>

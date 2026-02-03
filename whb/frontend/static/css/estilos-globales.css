@@ -69,9 +69,10 @@ body {
 }
 
 .header-text {
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    align-items: center;
     text-align: center;
 }
 
@@ -91,6 +92,8 @@ body {
     line-height: 1.4;
     color: #475569; 
     max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 @media (max-width: 480px) {
@@ -275,6 +278,47 @@ body {
     font-size: 0.78rem; 
     color: #64748b; 
     text-align: right; 
+}
+
+/*********************************
+ * 7.5. ESTILOS BOTONES IDIOMAS              *
+ *********************************/
+
+/* Aseguramos que el header organice los elementos en fila */
+.app-header {
+    display: flex;
+    align-items: center; /* Centrar verticalmente */
+    padding: 1rem 2rem;
+    gap: 20px;
+    position: relative;
+}
+
+.header-text {
+    flex-grow: 1; /* Esto hace que el texto ocupe el espacio disponible */
+}
+
+/* El contenedor del selector se empuja a la derecha si es necesario */
+.lang-selector-container {
+    margin-left: auto; /* Empuja el selector totalmente a la derecha */
+}
+
+/* Estilo del "Mini Desplegable" */
+#languageSwitcher {
+    background-color: transparent;
+    color: #333; /* O blanco si tu fondo es oscuro */
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: bold;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+#languageSwitcher:hover {
+    background-color: #f0f0f0;
+    border-color: #999;
 }
 
 /*********************************

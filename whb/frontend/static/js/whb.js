@@ -2,15 +2,12 @@
 // CONTROLADOR PRINCIPAL (Botones y Backend)
 // ==========================================
 
-// 1. Referencias a los botones DE LA IZQUIERDA (Sidebar)
 const btnSelfie = document.getElementById("btnSelfie");
 const fileInput = document.getElementById("fileInput");
 
-// 2. Referencias a los botones DEL CENTRO (Nuevos)
 const btnSelfieCenter = document.getElementById("btnSelfieCenter");
 const fileInputCenter = document.getElementById("fileInputCenter");
 
-// Referencias comunes
 const resultadoDiv = document.getElementById("resultado");
 const productButtons = document.querySelectorAll(".product-pill");
 
@@ -18,21 +15,17 @@ const productButtons = document.querySelectorAll(".product-pill");
 // ==========================================
 // A. GESTIÓN DE PRODUCTOS (NUEVO SISTEMA)
 // ==========================================
-// Ahora seleccionamos las miniaturas nuevas (.product-thumb)
 const productThumbs = document.querySelectorAll(".product-thumb");
 
 productThumbs.forEach(thumb => {
     thumb.addEventListener("click", () => {
-        // 1. Gestión visual (Quitar active a todos, poner al clicado)
         productThumbs.forEach(t => t.classList.remove("active"));
         thumb.classList.add("active");
 
-        // 2. Obtener el ID del producto
         const pid = thumb.dataset.productId;
         
         console.log("Producto seleccionado:", pid);
 
-        // 3. Cambiar el filtro visualmente
         if (window.cambiarProductoVisual) {
             cambiarProductoVisual(pid);
         }
@@ -44,7 +37,6 @@ productThumbs.forEach(thumb => {
 // B. LÓGICA REUTILIZABLE (Funciones comunes)
 // ==========================================
 
-// Función 1: Analizar imagen en Backend
 async function enviarImagenParaAnalisis(dataUrl) {
     resultadoDiv.textContent = "Analizando tu piel con IA...";
     console.log("Enviando imagen al backend…");
@@ -63,7 +55,6 @@ async function enviarImagenParaAnalisis(dataUrl) {
             return;
         }
 
-        // Construir HTML de respuesta
         let html = "";
         if (data.problemas && data.problemas.length > 0) {
             html += "<strong>Puntos detectados:</strong><ul>";
@@ -80,16 +71,13 @@ async function enviarImagenParaAnalisis(dataUrl) {
             });
             html += "</ul>";
             
-            // Activar crema recomendada
             const recommendedId = data.recomendaciones[0].id;
             
-            // Actualizar botones UI
             productButtons.forEach(btn => {
                 if(btn.dataset.productId === recommendedId) btn.classList.add("active");
                 else btn.classList.remove("active");
             });
 
-            // Actualizar visualizador
             if(window.cambiarProductoVisual) cambiarProductoVisual(recommendedId);
         }
 
@@ -116,7 +104,6 @@ const ejecutarModoSelfie = async () => {
 
 // Función 3: Lógica para subir foto (Sirve para ambos inputs)
 const ejecutarSubidaFoto = (e) => {
-    // 'e.target' es el input que disparó el evento
     const file = e.target.files[0];
     if (!file) return;
 
@@ -124,10 +111,8 @@ const ejecutarSubidaFoto = (e) => {
     reader.onload = evt => {
         const dataUrl = evt.target.result;
         
-        // 1. Mostrar en el comparador
         if(window.cargarImagenEnComparador) window.cargarImagenEnComparador(dataUrl);
         
-        // 2. Enviar a analizar
         enviarImagenParaAnalisis(dataUrl);
     };
     reader.readAsDataURL(file);
@@ -138,10 +123,8 @@ const ejecutarSubidaFoto = (e) => {
 // C. ASIGNACIÓN DE EVENTOS (Listeners)
 // ==========================================
 
-// 1. Botones de la Izquierda (Sidebar)
 if(btnSelfie) btnSelfie.addEventListener("click", ejecutarModoSelfie);
 if(fileInput) fileInput.addEventListener("change", ejecutarSubidaFoto);
 
-// 2. Botones del Centro (¡LO NUEVO!)
 if(btnSelfieCenter) btnSelfieCenter.addEventListener("click", ejecutarModoSelfie);
 if(fileInputCenter) fileInputCenter.addEventListener("change", ejecutarSubidaFoto);

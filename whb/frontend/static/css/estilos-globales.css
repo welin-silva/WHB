@@ -7,7 +7,6 @@ body {
     margin: 0;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro", sans-serif;
     color: #1e293b; 
-    /* ZONA 1: El fondo base del navegador será el Beige */
     background: #E0CD95; 
     min-height: 100vh;
 }
@@ -15,13 +14,10 @@ body {
 /*********************************
  * 2. FONDO Y WRAPPER            *
  *********************************/
-/* ZONA 1: FONDO GLOBAL (El Beige #E0CD95) */
 .bg-futuristic {
     position: fixed; inset: 0;
     z-index: -2;
-    background-color: #E0CD95; /* Color BEIGE solicitado */
-    
-    /* Un degradado muy sutil para que el beige tenga volumen y parezca "seda" */
+    background-color: #E0CD95;
     background-image: 
         radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.4) 0%, transparent 50%),
         linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.05) 100%);
@@ -31,15 +27,9 @@ body {
 .app-wrapper {
     max-width: 90vw; margin: 30px auto;
     padding: 16px 20px 32px;
-    
-    /* Fondo blanco crema limpio para el laboratorio */
     background: #FDFCF8; 
-    
-    /* Sombra fuerte para separar el cuadro blanco del fondo beige */
     box-shadow: 0 30px 60px rgba(15, 23, 42, 0.15);
-    
     border-radius: 24px;
-    /* Borde muy fino azulado para definir */
     border: 1px solid rgba(15, 23, 42, 0.05);
     min-height: 95vh;
 }
@@ -81,7 +71,6 @@ body {
     margin: 0 0 4px 0;
     font-size: 1.25rem;
     font-weight: 700;
-    /* Usamos el Azul Noche para texto sobre fondo blanco */
     color: #0F172A; 
 }
 
@@ -112,21 +101,12 @@ body {
 
 /* ZONA 3: FONDOS DE CADA APARTADO (Azul Noche Oscuro) */
 .card, .viewer-card, .products-card {
-    /* CAMBIO: "Negro Carbón" (Zinc oscuro). 
-       Es neutro, potente y hace que el beige parezca ORO. */
     background: #18181b; 
-    
     border-radius: 20px; 
     padding: 20px; 
     margin-top: 20px;
-    
-    /* Borde muy sutil en beige para conectarlo con el fondo */
     border: 1px solid rgba(224, 205, 149, 0.15);
-    
-    /* Sombra negra suave para dar profundidad */
     box-shadow: 0 15px 40px -10px rgba(0, 0, 0, 0.3);
-    
-    /* Texto blanco puro para máxima legibilidad */
     color: #ffffff; 
 }
 
@@ -135,7 +115,7 @@ body {
     font-size: 1.4rem; 
     font-weight: 700; 
     margin: 0 0 10px;
-    color: #E0CD95; /* Tu beige sobre negro = Lujo total */
+    color: #E0CD95;
 }
 
 .small { font-size: 0.85rem; color: #94a3b8; } 
@@ -146,16 +126,16 @@ body {
  *********************************/
 .btn {
     /* PROPIEDADES CLAVE PARA ARREGLAR EL LABEL */
-    display: block;          /* 1. Hace que el label se comporte como una caja (botón) */
-    width: 100%;             /* 2. Ocupa todo el ancho disponible */
-    box-sizing: border-box;  /* 3. Asegura que el padding no rompa el tamaño */
-    text-align: center;      /* 4. Centra el texto (los labels no lo hacen por defecto) */
-    cursor: pointer;         /* 5. Pone la manita al pasar el ratón */
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    cursor: pointer;
     
     /* ESTÉTICA COMÚN */
     border-radius: 999px; 
     padding: 12px 0; 
-    border: none; /* Se sobrescribe en el secundario */
+    border: none;
     font-size: 0.9rem; 
     margin-top: 10px; 
     font-family: inherit;
@@ -178,22 +158,17 @@ body {
 
 /* BOTÓN SECUNDARIO (Arreglado para Subir Foto) */
 .btn-secondary {
-    /* Gris oscuro neutro que destaca sobre el fondo negro */
     background: #27272a; 
     color: #f1f5f9; 
-    
-    /* Borde sutil para definir la forma */
     border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .btn-secondary:hover {
     background: #3f3f46; 
-    /* Detalle de lujo: el borde se pone beige al pasar el mouse */
     border-color: rgba(224, 205, 149, 0.4); 
     transform: translateY(-1px);
 }
 
-/* Espaciado extra si se juntan mucho */
 .button-group .btn { margin-top: 10px; }
 
 /*********************************
@@ -206,11 +181,8 @@ body {
 }
 
 .product-pill {
-    /* Fondo: Gris Carbón (Zinc) un poco más claro que la caja principal */
     background: #27272a; 
-    
     border-radius: 16px;
-    /* Borde muy sutil casi invisible */
     border: 1px solid rgba(255, 255, 255, 0.08); 
     padding: 15px; 
     text-align: left; cursor: pointer; font-size: 0.8rem; color: #f1f5f9;
@@ -226,10 +198,7 @@ body {
     width: 100%; height: auto; max-height: 180px; margin-top: 10px;
     align-self: center; display: flex; justify-content: center; align-items: center;
     overflow: hidden; flex-shrink: 0; 
-    
-    /* Fondo: Negro casi puro para resaltar la foto del producto */
     background-color: #09090b; 
-    
     border-radius: 8px; 
     transition: background-color 0.1s ease;
 }
@@ -246,25 +215,19 @@ body {
 
 /* ESTADO HOVER (Al pasar el ratón) */
 .product-pill:hover {
-    /* Borde Beige brillante */
     border-color: rgba(224, 205, 149, 0.8); 
-    /* Fondo se aclara ligeramente */
     background-color: #2e2e33; 
     transform: translateY(-2px);
 }
 
 /* ESTADO ACTIVO (Seleccionado) */
 .product-pill.active {
-    /* Borde Beige Sólido */
     border-color: #E0CD95; 
-    /* Fondo oscuro base */
     background: #18181b;
-    /* Resplandor dorado lujoso */
     box-shadow: 0 0 20px rgba(224, 205, 149, 0.2);
 }
 
 .product-pill.active .product-name {
-    /* El nombre se pone color Oro/Beige */
     color: #E0CD95; 
 }
 
@@ -284,28 +247,26 @@ body {
  * 7.5. ESTILOS BOTONES IDIOMAS              *
  *********************************/
 
-/* Aseguramos que el header organice los elementos en fila */
 .app-header {
     display: flex;
-    align-items: center; /* Centrar verticalmente */
+    align-items: center;
     padding: 1rem 2rem;
     gap: 20px;
     position: relative;
 }
 
 .header-text {
-    flex-grow: 1; /* Esto hace que el texto ocupe el espacio disponible */
+    flex-grow: 1;
 }
 
-/* El contenedor del selector se empuja a la derecha si es necesario */
 .lang-selector-container {
-    margin-left: auto; /* Empuja el selector totalmente a la derecha */
+    margin-left: auto; 
 }
 
 /* Estilo del "Mini Desplegable" */
 #languageSwitcher {
     background-color: transparent;
-    color: #333; /* O blanco si tu fondo es oscuro */
+    color: #333;
     border: 1px solid #ccc;
     padding: 5px 10px;
     border-radius: 20px;

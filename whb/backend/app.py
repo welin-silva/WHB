@@ -3,15 +3,14 @@ import base64
 import io
 from PIL import Image
 import numpy as np
-      #hola
 # IA (para usar más adelante)
 # import cv2
 # import mediapipe as mp
 
 app = Flask(
     __name__,
-    template_folder="../frontend/templates",   # 👈 ruta correcta
-    static_folder="../frontend/static"        # 👈 css/js/img
+    template_folder="../frontend/templates",
+    static_folder="../frontend/static"
 )
 
 # -----------------------------
@@ -22,7 +21,7 @@ MARTIDERM_PRODUCTS = [
         "id": "arrugas",
         "nombre": "Black Diamond Epigence SPF 50+ (Arrugas)",
         "beneficio": "-36% arrugas / líneas de expresión",
-        "imagen_url": "/static/img/arrugas.jpeg"  # RUTA DE IMAGEN
+        "imagen_url": "/static/img/arrugas.jpeg"
     },
     {
         "id": "manchas",
@@ -68,33 +67,27 @@ def analizar_piel_sencillo(imagen_pil: Image.Image) -> dict:
       - landmarks faciales
       - detección de zonas concretas
     """
-    # Redimensionamos y pasamos a array
     img = np.array(imagen_pil.resize((256, 256)))
 
-    # Espacio HSV para mirar brillo y tono
     hsv = Image.fromarray(img).convert("HSV")
     hsv_np = np.array(hsv)
 
-    # Canal de luminosidad (V) y saturación (S)
     luminosidad_media = hsv_np[:, :, 2].mean()
     saturacion_media = hsv_np[:, :, 1].mean()
 
     problemas = []
     recomendaciones = []
 
-    # Reglas muy simples SOLO para demo visual
     if luminosidad_media < 90:
         problemas.append("Piel apagada / falta de luminosidad")
         recomendaciones.append(buscar_producto("piel_apagada"))
     elif luminosidad_media > 170:
         problemas.append("Brillo elevado en la piel (especialmente zona T)")
-        # aquí podrías asociar un producto matificante, si lo hubiera
 
     if saturacion_media < 65:
         problemas.append("Tono poco uniforme, posible apariencia de manchas suaves")
         recomendaciones.append(buscar_producto("manchas"))
 
-    # Añadimos algunos problemas estándar para enseñar todo el catálogo
     if buscar_producto("arrugas") not in recomendaciones:
         recomendaciones.append(buscar_producto("arrugas"))
         problemas.append("Líneas de expresión en contorno de ojos / frente (estimado)")
@@ -107,7 +100,6 @@ def analizar_piel_sencillo(imagen_pil: Image.Image) -> dict:
         recomendaciones.append(buscar_producto("acne"))
         problemas.append("Posibles imperfecciones o textura irregular (estimado)")
 
-    # Eliminamos None y duplicados
     recomendaciones = [p for p in recomendaciones if p]
     unique = []
     seen = set()
@@ -146,7 +138,6 @@ def analizar_piel_api():
     if not image_data:
         return jsonify({"error": "No se ha recibido imagen"}), 400
 
-    # Eliminar el prefijo "data:image/xxx;base64," si viene incluido
     if "," in image_data:
         image_data = image_data.split(",", 1)[1]
 

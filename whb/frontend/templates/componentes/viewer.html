@@ -8,32 +8,90 @@
     </button>
 
     <div class="viewer-container">
-        <video id="video" class="img-layer" style="object-fit: cover; z-index: 1;" autoplay playsinline></video>
-        
-        <video id="videoFiltered" class="img-layer top-layer" style="object-fit: cover; z-index: 2;" autoplay playsinline></video>
 
+        <!-- VIDEO ORIGINAL -->
+        <video id="video"
+               class="img-layer"
+               style="object-fit: cover; z-index: 1;"
+               autoplay
+               playsinline>
+        </video>
+        
+        <!-- VIDEO FILTRADO -->
+        <video id="videoFiltered"
+               class="img-layer top-layer"
+               style="object-fit: cover; z-index: 2;"
+               autoplay
+               playsinline>
+        </video>
+
+        <!-- CANVAS MEDIAPIPE (NUEVO) -->
+        <canvas
+            id="faceMeshCanvas"
+            class="img-layer" 
+            style="
+                position:absolute;
+                top:0;
+                left:0;
+                width:100%;
+                height:100%;
+                z-index: 20; /* Subimos el z-index para que esté encima del slider y textos */
+                pointer-events:none;">
+        </canvas>
+
+
+        <!-- COMPARADOR DE IMÁGENES -->
         <div id="compareWrapper" class="compare-wrapper" style="z-index: 3;">
             <img id="imgOriginal" class="img-layer" alt="Original">
             <img id="imgFiltered" class="img-layer top-layer" alt="Con crema">
         </div>
 
-        <div class="compare-divider" id="divider" style="z-index: 10; display: none;"></div>
+        <!-- DIVISOR -->
+        <div class="compare-divider"
+             id="divider"
+             style="z-index: 10; display: none;">
+        </div>
 
-        <div id="noImageText" class="no-image-content" style="z-index: 20;">
+        <!-- TEXTO CUANDO NO HAY IMAGEN -->
+        <div id="noImageText"
+             class="no-image-content"
+             style="z-index: 20;">
             <p data-i18n="VIEWER.NO_IMAGE"></p>
             <div class="center-actions">
-                <button id="btnSelfieCenter" class="btn btn-primary" onclick="iniciarCamaraYCapturar()" data-i18n="VIEWER.SELFIE_MODE"></button>
-                <input type="file" id="fileInputCenter" accept="image/*" hidden>
-                <label for="fileInputCenter" class="btn btn-secondary" data-i18n="VIEWER.UPLOAD_PHOTO"></label>
+                <button id="btnSelfieCenter"
+                        class="btn btn-primary"
+                        onclick="iniciarCamaraYCapturar()"
+                        data-i18n="VIEWER.SELFIE_MODE">
+                </button>
+
+                <input type="file"
+                       id="fileInputCenter"
+                       accept="image/*"
+                       hidden>
+
+                <label for="fileInputCenter"
+                       class="btn btn-secondary"
+                       data-i18n="VIEWER.UPLOAD_PHOTO">
+                </label>
             </div>
         </div>
     </div>
 
-    <div class="slider-row" id="mainSliderRow" style="display: none;">
-        <label for="compareSlider" data-i18n="VIEWER.SLIDER_LABEL"></label>
-        <input type="range" id="compareSlider" min="0" max="100" value="50">
+    <!-- SLIDER -->
+    <div class="slider-row"
+         id="mainSliderRow"
+         style="display: none;">
+        <label for="compareSlider"
+               data-i18n="VIEWER.SLIDER_LABEL">
+        </label>
+        <input type="range"
+               id="compareSlider"
+               min="0"
+               max="100"
+               value="50">
     </div>
 
+    <!-- PRODUCTOS -->
     <div class="products-strip-container">
         <h3 data-i18n="VIEWER.PRODUCTS_TITLE"></h3>
         <div class="products-strip">

@@ -27,14 +27,11 @@
     position: absolute;
     left: 0;
     top: 0;
-    
     width: 140px;  
     height: 190px; 
-    
     background: rgba(255, 255, 255, 0.1); 
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 10px;
-    
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -118,10 +115,6 @@
 }
 
 
-
-
-
-
 /*********************************
  * BARRA DE MINIATURAS (OVERLAY) *
  *********************************/
@@ -130,14 +123,14 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 80px; /* Altura de la franja roja de tu dibujo */
+    height: 80px;
     background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.4));
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 0 16px;
-    overflow-x: auto; /* Permite scroll horizontal si hay muchas */
-    z-index: 20; /* Para que quede encima de la imagen/video */
+    overflow-x: auto;
+    z-index: 20;
     backdrop-filter: blur(4px);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -160,7 +153,7 @@
     cursor: pointer;
     border: 2px solid rgba(255, 255, 255, 0.3);
     transition: all 0.2s ease;
-    flex-shrink: 0; /* Evita que se aplasten */
+    flex-shrink: 0;
 }
 
 .thumb-item img {
@@ -176,9 +169,8 @@
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
-/* Estado Activo (la foto seleccionada) */
 .thumb-item.active {
-    border-color: #ff2d8f; /* Tu color rosa neón */
+    border-color: #ff2d8f;
     box-shadow: 0 0 10px rgba(255, 45, 143, 0.6);
 }
 
@@ -188,18 +180,18 @@
 /* Contenedor central cuando no hay imagen */
 .no-image-content {
     position: absolute;
-    inset: 0; /* Ocupa todo el espacio del visor */
+    inset: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     z-index: 10;
-    pointer-events: auto; /* Asegura que los botones se puedan clicar */
+    pointer-events: auto;
 }
 
 /* Texto "Todavía no hay imagen" */
 .no-image-content p {
-    color: #94a3b8; /* Gris suave */
+    color: #94a3b8;
     font-size: 0.95rem;
     margin-bottom: 20px;
 }
@@ -210,12 +202,12 @@
     flex-direction: column;
     gap: 12px;
     width: 100%;
-    max-width: 240px; /* Limitamos el ancho para que no sean gigantes */
+    max-width: 240px;
 }
 
 /* Aseguramos que los botones dentro del visor se comporten bien */
 .center-actions .btn {
-    margin: 0; /* Quitamos margen superior heredado */
+    margin: 0;
     font-size: 0.9rem;
     padding: 12px 0;
 }
@@ -224,37 +216,22 @@
  * ZONA INFERIOR (CARRUSEL)      *
  *********************************/
 .products-carousel-card {
-    /* ESTILOS DE LA CAJA (Negro Carbón) */
     background: #18181b; 
     border-radius: 20px; 
-    
-    /* --- CAMBIO 1: MÁS ESPACIO VERTICAL --- */
-    /* Aumentamos el padding, especialmente abajo, para el reflejo */
     padding: 40px 20px 100px 20px; 
-    
     margin-top: 30px; 
     width: 100%;
     border: 1px solid rgba(224, 205, 149, 0.15);
     box-shadow: 0 15px 40px -10px rgba(0, 0, 0, 0.3);
-    
-    /* CENTRADO */
     display: flex;
     flex-direction: column;
     align-items: center;    
     justify-content: center;
-    
-    /* --- CAMBIO 2: ALTURA AUTOMÁTICA --- */
-    /* Quitamos min-height fija. Que la caja crezca lo que necesite */
     height: auto; 
-    
-    /* --- CAMBIO 3 (EL MÁS IMPORTANTE): NO CORTAR --- */
-    /* Esto permite que el 3D se salga de los límites sin cortarse */
     overflow: visible; 
-    
     position: relative;
 }
 
-/* El título se mantiene igual */
 .products-carousel-card h2 {
     color: #E0CD95;
     margin-bottom: 40px; 

@@ -1,0 +1,38 @@
+{
+    "INDEX": {
+        "TITLE": "WHB – 智能护肤 AI",
+        "TITLE2": "WHB · 皮肤 AI 实验室",
+        "SUBTITLE": "实时分析您的皮肤，检测改善区域，并通过视觉模拟试用 WHB 面霜。",
+        "TEXT": "WHB · 智能美妆项目 · 教学演示",
+        "ES": "ES",
+        "EN": "EN",
+        "CA": "CA",
+        "CH": "CH"
+    },
+
+    "LEFT_PANEL": {
+        "TITLE_START": "您想如何开始？",
+        "INSTRUCTIONS": "1. 自拍或上传照片。<br>2. AI 将分析您的皮肤并标记需改善部位。<br>3. 使用半脸对比功能试用每款面霜。",
+        "SELFIE_MODE": "自拍模式",
+        "UPLOAD_PHOTO": "上传照片",
+        "ANALYSIS_TITLE": "皮肤评估",
+        "INITIAL_MESSAGE": "待机模式",
+        "INITIAL_SUBMESSAGE": "要开始 AI 分析，请点击“自拍模式”或上传您的图片。<br>此处将显示您皮肤的 **6 项关键指标**。",
+        "ANALYSIS_POINTS_TITLE": "检测到的关键点",
+        "RECOMMENDATIONS_TITLE": "推荐建议摘要"
+    },
+
+    "CARROUSEL": {
+        "TITLE": "推荐的 WHB 面霜",
+        "WHB": "WHB"
+    },
+
+    "VIEWER": {
+        "TITLE": "预览与对比",
+        "NO_IMAGE": "尚无图像",
+        "SELFIE_MODE": "自拍模式",
+        "UPLOAD_PHOTO": "上传照片",
+        "SLIDER_LABEL": "滑动查看效果：",
+        "PRODUCTS_TITLE": "选择护理方案："
+    }
+}

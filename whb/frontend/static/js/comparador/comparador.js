@@ -129,13 +129,9 @@ window.cargarImagenEnComparador = function(dataUrl) {
     if(noImageText) noImageText.style.display = "none";
     if(btnFullscreen) btnFullscreen.style.display = "flex";
 
-    // ==========================================================
-    // 3. EL ARREGLO: ACTIVAR BARRA Y LÍNEA (Igual que en selfie)
-    // ==========================================================
     const divider = document.getElementById("divider");
     const mainSliderRow = document.getElementById("mainSliderRow");
 
-    // Mostramos la línea rosa
     if(divider) {
         divider.style.display = "block"; 
         divider.style.left = "50%";
@@ -162,7 +158,6 @@ window.cargarImagenEnComparador = function(dataUrl) {
     aplicarFiltroInterno();
 };
 
-// Pantalla completa
 if (btnFullscreen && cardElement) {
     btnFullscreen.addEventListener("click", () => {
         if (!document.fullscreenElement) {

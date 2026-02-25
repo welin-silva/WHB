@@ -1,4 +1,10 @@
 // ==========================================
+// CONFIGURACIÓN PARA EL EQUIPO (FLAGS FRONTEND)
+// ==========================================
+// Cambiar a 'false' para apagar la malla verde en pantalla (ideal para trabajar en backend)
+const ENABLE_LIVE_MESH = true; 
+
+// ==========================================
 // CONTROLADOR PRINCIPAL (Botones y Backend)
 // ==========================================
 
@@ -40,6 +46,9 @@ let cameraMP = null;
 let mediaPipeActivo = false;
 
 function initMediaPipe() {
+    // 🛑 INTERRUPTOR: Si está apagado, salimos de la función y no dibujamos nada
+    if (!ENABLE_LIVE_MESH) return;
+
     if (mediaPipeActivo || !videoElement) return;
 
     faceMesh = new FaceMesh({
@@ -58,8 +67,6 @@ function initMediaPipe() {
         if (!results.multiFaceLandmarks || !videoElement.videoWidth) return;
 
         // --- CORRECCIÓN 1: RESOLUCIÓN ---
-        // Ajustamos el canvas al tamaño REAL del video (ej. 640x480)
-        // Esto soluciona los puntos pequeños y la alineación base.
         canvasElement.width = videoElement.videoWidth;
         canvasElement.height = videoElement.videoHeight;
 
@@ -68,15 +75,13 @@ function initMediaPipe() {
         const lm = results.multiFaceLandmarks[0];
 
         // --- CORRECCIÓN 2: DIBUJADO LIMPIO ---
-        // drawConnectors NO acepta offsets. Al tener el canvas
-        // el mismo tamaño que el video, el dibujado es automático y perfecto.
         drawConnectors(
             canvasCtx,
             lm,
             FACEMESH_TESSELATION,
             {
                 color: "#00ffcc",
-                lineWidth: 1 // Ahora se verá más grueso porque la resolución es correcta
+                lineWidth: 1
             }
         );
 
@@ -86,7 +91,6 @@ function initMediaPipe() {
 
         let mensajes = [];
 
-        // Ajuste de sensibilidad (opcional, depende de tu prueba)
         if (ojoIzq < 0.015 && ojoDer < 0.015) {
             mensajes.push("Signos de cansancio en el contorno de ojos");
         }
@@ -126,7 +130,10 @@ function stopMediaPipe() {
         cameraMP = null;
     }
 
-    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+    // Asegurarnos de limpiar el canvas al detener
+    if (canvasCtx && canvasElement) {
+        canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+    }
 }
 
 // ==========================================
@@ -167,6 +174,23 @@ async function enviarImagenParaAnalisis(dataUrl) {
             if (window.cambiarProductoVisual) {
                 cambiarProductoVisual(data.recomendaciones[0].id);
             }
+        }
+
+        // MOSTRAR DATOS DE OPENCV SI EXISTEN
+        if (data.metrics) {
+            html += "<br><strong>Métricas de Piel (OpenCV):</strong><ul>";
+            for (const [key, value] of Object.entries(data.metrics)) {
+                html += `<li>${key}: ${value}</li>`;
+            }
+            html += "</ul>";
+        }
+
+        // MOSTRAR DATOS DE DEEPFACE SI EXISTEN
+        if (data.face) {
+            html += "<br><strong>Análisis Facial (DeepFace):</strong><ul>";
+            html += `<li>Edad estimada: ${data.face.edad_estimada}</li>`;
+            html += `<li>Emoción: ${data.face.emocion}</li>`;
+            html += "</ul>";
         }
 
         resultadoDiv.innerHTML = html;

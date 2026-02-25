@@ -1,0 +1,39 @@
+PROMPT 2 — DeepFace (Python 3.11 + Flask) para edad + emoción
+CÓPIALO TAL CUAL:
+
+PROMPT PARA NUEVO CHAT — WHB: DEEPFACE EN PYTHON 3.11 (Flask) PARA EDAD + EMOCIÓN
+
+Hola ChatGPT. Estoy trabajando en una web app WHB (IA cosmética) con:
+- Backend Flask en Python 3.11 (venv)
+- Endpoint POST /analizar_piel que recibe imagen base64 desde el frontend
+- Ya tengo OpenCV instalado y funcionando (opencv-python, numpy, pillow)
+- Ya uso mediapipe en el proyecto (no imprescindible para este paso)
+
+OBJETIVO:
+Quiero añadir DeepFace en el backend para:
+1) Estimar edad aproximada
+2) Detectar emoción dominante (happy/sad/neutral/angry/etc.)
+3) Devolverlo en el JSON final de /analizar_piel como:
+"face": {
+  "age": 29,
+  "dominant_emotion": "happy",
+  "emotion": { "happy": 0.80, "neutral": 0.15, ... }
+}
+
+REQUISITOS IMPORTANTES:
+- Compatible con Python 3.11
+- Que funcione en macOS y Windows
+- Si DeepFace falla o no detecta cara, NO debe romper la app:
+  - devolver face: null
+  - y un warning en el JSON
+- Quiero que me indiques:
+  A) comandos de instalación exactos en venv (incluyendo dependencias que suelen fallar)
+  B) cómo preparar la imagen (BGR/RGB) antes de pasar a DeepFace
+  C) el código final para integrarlo en backend/analysis.py y llamar desde backend/app.py
+  D) cómo minimizar el coste: ejecutar DeepFace SOLO cuando el usuario sube foto o captura (no tiempo real)
+  E) ejemplo de render en el frontend (div #resultado)
+
+Por favor:
+- Dame pasos numerados y código final completo listo para copiar/pegar
+- Incluye try/except y logs
+- Avisa de los problemas típicos de instalación (tensorflow, keras) y cómo solucionarlos

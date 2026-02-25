@@ -1,0 +1,56 @@
+✅ PROMPT 1 — OpenCV (Python 3.11 + Flask) para métricas cosméticas
+CÓPIALO TAL CUAL:
+
+PROMPT PARA NUEVO CHAT — WHB: OPENCV EN PYTHON 3.11 (Flask) PARA ANÁLISIS COSMÉTICO
+
+Hola ChatGPT. Estoy trabajando en una web app llamada WHB (IA cosmética) con:
+- Backend Flask en Python 3.11 (venv)
+- Endpoint POST /analizar_piel que recibe una imagen base64 (dataUrl) desde el frontend
+- Ya tengo instalado en el venv: flask, numpy, pillow, opencv-python, opencv-contrib-python, mediapipe
+
+Estructura del proyecto:
+whb/
+  backend/
+    app.py
+    analysis.py
+  frontend/
+    templates/ + static/
+
+OBJETIVO:
+Quiero implementar análisis por foto en Python con OpenCV (sin modelos pesados) para:
+1) Validar calidad de imagen:
+   - Blur score (Laplacian variance)
+   - Brightness (media de luminancia)
+   - Contraste (desviación luminancia)
+2) Métricas cosméticas básicas (aproximadas pero útiles):
+   - Redness score (rojeces) usando HSV o canal R normalizado
+   - Tone variance (uniformidad de tono) en una zona de cara (si hay) o en toda la imagen
+   - Texture score (textura/poros aprox) usando edges/variance en escala de grises
+3) Devolver JSON estructurado:
+{
+  "problemas": [...],
+  "recomendaciones": [...],
+  "metrics": {
+    "blurScore": ...,
+    "brightness": ...,
+    "contrast": ...,
+    "rednessScore": ...,
+    "toneVariance": ...,
+    "textureScore": ...
+  },
+  "qualityWarnings": ["muy oscura", "borrosa", ...]
+}
+
+REQUISITOS:
+- Compatible con Python 3.11
+- Rápido (sin deep learning)
+- Si no hay cara, igual devuelve métricas globales y un aviso
+- Quiero el código FINAL COMPLETO para:
+  A) backend/analysis.py (funciones: decode_base64_image, compute_metrics_opencv)
+  B) backend/app.py (endpoint /analizar_piel que llama a analysis.py y devuelve JSON)
+- También quiero un ejemplo de cómo el frontend debe mostrar metrics en el div #resultado (HTML simple)
+
+IMPORTANTE:
+- Dame pasos numerados exactos (qué archivo abrir y qué pegar)
+- Incluye manejo de errores y mensajes claros
+- No rompas el flujo actual de recomendaciones/productos

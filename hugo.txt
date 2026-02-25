@@ -1,6 +1,22 @@
 PROMPT 2 — DeepFace (Python 3.11 + Flask) para edad + emoción
 CÓPIALO TAL CUAL:
 
+----------IMPORTANTEE--------
+La regla es sencilla: Nadie toca analysis.py para programar su IA.
+
+El de DeepFace:
+
+Entra a la carpeta backend/deep_face/.
+
+Crea un archivo (ej: emotions.py).
+
+Programa su función usando la librería DeepFace que recibe la foto y devuelve la edad/emoción.
+
+Pone ENABLE_DEEPFACE = True para probar localmente.
+
+
+----------IMPORTANTEE--------
+
 PROMPT PARA NUEVO CHAT — WHB: DEEPFACE EN PYTHON 3.11 (Flask) PARA EDAD + EMOCIÓN
 
 Hola ChatGPT. Estoy trabajando en una web app WHB (IA cosmética) con:

@@ -38,12 +38,22 @@ productThumbs.forEach(thumb => {
 });
 
 // ==========================================
-// B. MEDIAPIPE FACE MESH (TIEMPO REAL)
+// B. MOTOR BIOMÉTRICO MEDIAPIPE (TIEMPO REAL)
 // ==========================================
 
 let faceMesh = null;
 let cameraMP = null;
 let mediaPipeActivo = false;
+
+// Variables para el escáner automático
+let isScanning = false;
+let scanTimer = 5;
+let scanInterval = null;
+
+// Funciones matemáticas para cálculos 3D
+function calcDistancia(p1, p2) {
+    return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2) + Math.pow(p1.z - p2.z, 2));
+}
 
 function initMediaPipe() {
     // 🛑 INTERRUPTOR: Si está apagado, salimos de la función y no dibujamos nada
@@ -85,25 +95,54 @@ function initMediaPipe() {
             }
         );
 
-        // ===== VALORACIÓN EN TIEMPO REAL =====
-        const ojoIzq = lm[159].y - lm[145].y;
-        const ojoDer = lm[386].y - lm[374].y;
+        // ==========================================
+        // CÁLCULOS BIOMÉTRICOS REALES (Normalizados)
+        // ==========================================
+        
+        // 1. Referencia base (Ancho de la cara de pómulo a pómulo)
+        const anchoCara = calcDistancia(lm[234], lm[454]);
 
-        let mensajes = [];
+        // 2. Fatiga Ocular
+        const ojoIzq = calcDistancia(lm[159], lm[145]) / anchoCara;
+        const ojoDer = calcDistancia(lm[386], lm[374]) / anchoCara;
+        const aperturaOjos = (ojoIzq + ojoDer) / 2;
+        
+        let estadoOjos = "Mirada descansada y abierta";
+        if (aperturaOjos < 0.040) estadoOjos = "<span style='color:#ffaa00'>Fatiga ocular (ojos semicerrados)</span>";
 
-        if (ojoIzq < 0.015 && ojoDer < 0.015) {
-            mensajes.push("Signos de cansancio en el contorno de ojos");
+        // 3. Tensión del Ceño
+        const distanciaCejas = calcDistancia(lm[55], lm[285]) / anchoCara;
+        let estadoFrente = "Frente relajada";
+        if (distanciaCejas < 0.22) estadoFrente = "<span style='color:#ffaa00'>Tensión detectada en el ceño</span>";
+
+        // 4. Postura (Asimetría)
+        const inclinacionY = Math.abs(lm[33].y - lm[263].y); 
+        let estadoPostura = "Postura frontal correcta";
+        if (inclinacionY > 0.03) estadoPostura = "<span style='color:#ffaa00'>Asimetría postural (cabeza inclinada)</span>";
+
+        // 5. Tensión Labial
+        const anchoBoca = calcDistancia(lm[61], lm[291]) / anchoCara;
+        let estadoBoca = "Zona peribucal relajada";
+        if (anchoBoca < 0.25) estadoBoca = "<span style='color:#ffaa00'>Tensión detectada en zona labial</span>";
+
+        // ==========================================
+        // ACTUALIZAR INTERFAZ DURANTE EL ESCÁNER
+        // ==========================================
+        if (isScanning) {
+            resultadoDiv.innerHTML = `
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <h3 style="color: #00ffcc; font-size: 24px; margin: 0;">Escaneando... ${scanTimer}s</h3>
+                    <p style="font-size: 12px; color: #aaa;">Mantén la postura frente a la cámara</p>
+                </div>
+                <strong>Datos Biométricos en vivo:</strong>
+                <ul style="font-size: 14px; line-height: 1.6;">
+                    <li>👁️ ${estadoOjos}</li>
+                    <li>🤨 ${estadoFrente}</li>
+                    <li>📐 ${estadoPostura}</li>
+                    <li>👄 ${estadoBoca}</li>
+                </ul>
+            `;
         }
-
-        mensajes.push("Rostro correctamente detectado");
-        mensajes.push("Textura facial uniforme");
-
-        resultadoDiv.innerHTML = `
-            <strong>Valoración en tiempo real:</strong>
-            <ul>
-                ${mensajes.map(m => `<li>${m}</li>`).join("")}
-            </ul>
-        `;
     });
 
     cameraMP = new Camera(videoElement, {
@@ -130,7 +169,6 @@ function stopMediaPipe() {
         cameraMP = null;
     }
 
-    // Asegurarnos de limpiar el canvas al detener
     if (canvasCtx && canvasElement) {
         canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
     }
@@ -176,7 +214,6 @@ async function enviarImagenParaAnalisis(dataUrl) {
             }
         }
 
-        // MOSTRAR DATOS DE OPENCV SI EXISTEN
         if (data.metrics) {
             html += "<br><strong>Métricas de Piel (OpenCV):</strong><ul>";
             for (const [key, value] of Object.entries(data.metrics)) {
@@ -185,7 +222,6 @@ async function enviarImagenParaAnalisis(dataUrl) {
             html += "</ul>";
         }
 
-        // MOSTRAR DATOS DE DEEPFACE SI EXISTEN
         if (data.face) {
             html += "<br><strong>Análisis Facial (DeepFace):</strong><ul>";
             html += `<li>Edad estimada: ${data.face.edad_estimada}</li>`;
@@ -201,23 +237,62 @@ async function enviarImagenParaAnalisis(dataUrl) {
 }
 
 // ==========================================
-// D. ACCIONES DE USUARIO
+// D. ACCIONES DE USUARIO Y ESCÁNER AUTOMÁTICO
 // ==========================================
 
+function empezarEscaneoAutomatico() {
+    isScanning = true;
+    scanTimer = 5;
+
+    scanInterval = setInterval(() => {
+        scanTimer--;
+
+        if (scanTimer <= 0) {
+            clearInterval(scanInterval);
+            isScanning = false;
+            
+            resultadoDiv.innerHTML = "<h3 style='color:#00ffcc'>¡Escaneo Completado!</h3><p>Procesando análisis dermatológico profundo...</p>";
+            
+            // Extraer foto real en secreto
+            const canvasTemp = document.createElement("canvas");
+            canvasTemp.width = videoElement.videoWidth;
+            canvasTemp.height = videoElement.videoHeight;
+            const ctxTemp = canvasTemp.getContext("2d");
+            ctxTemp.drawImage(videoElement, 0, 0);
+            const dataUrl = canvasTemp.toDataURL("image/jpeg", 0.9);
+
+            stopMediaPipe();
+            
+            if (window.cargarImagenEnComparador) cargarImagenEnComparador(dataUrl);
+            enviarImagenParaAnalisis(dataUrl);
+        }
+    }, 1000);
+}
+
 const ejecutarModoSelfie = () => {
-    resultadoDiv.textContent = "Activa la cámara y mira al frente.";
+    resultadoDiv.innerHTML = "<strong>Iniciando cámara...</strong><br>Mira de frente y relaja el rostro.";
 
     if (window.iniciarCamaraYCapturar) {
+        // Mantenemos tu función original que enciende el video
         window.iniciarCamaraYCapturar((dataUrl) => {
+            // Esto se ejecuta si el usuario hace click manualmente antes de los 5 segundos
+            clearInterval(scanInterval);
+            isScanning = false;
             stopMediaPipe();
             enviarImagenParaAnalisis(dataUrl);
         });
 
-        setTimeout(initMediaPipe, 500);
+        // Retrasamos el inicio del escaneo para darle tiempo a la cámara a encenderse
+        setTimeout(() => {
+            initMediaPipe();
+            empezarEscaneoAutomatico();
+        }, 800);
     }
 };
 
 const ejecutarSubidaFoto = (e) => {
+    clearInterval(scanInterval);
+    isScanning = false;
     stopMediaPipe();
 
     const file = e.target.files[0];

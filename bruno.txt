@@ -1,6 +1,23 @@
 ✅ PROMPT 1 — OpenCV (Python 3.11 + Flask) para métricas cosméticas
 CÓPIALO TAL CUAL:
 
+----------IMPORTANTEE--------
+
+La regla es sencilla: Nadie toca analysis.py para programar su IA.
+
+El de OpenCV:
+
+Entra a la carpeta backend/opencv/.
+
+Crea un archivo (ej: metrics.py).
+
+Programa ahí su función que reciba el frame de cv2 y devuelva un diccionario con datos (brillo, rojeces, etc.).
+
+En su ordenador, pone ENABLE_OPENCV = True en analysis.py para probar.
+
+----------IMPORTANTEE--------
+
+
 PROMPT PARA NUEVO CHAT — WHB: OPENCV EN PYTHON 3.11 (Flask) PARA ANÁLISIS COSMÉTICO
 
 Hola ChatGPT. Estoy trabajando en una web app llamada WHB (IA cosmética) con:

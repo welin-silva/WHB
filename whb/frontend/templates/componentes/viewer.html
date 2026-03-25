@@ -7,9 +7,8 @@
         </svg>
     </button>
 
-    <div class="viewer-container">
+    <div class="viewer-container" style="position: relative;">
 
-        <!-- VIDEO ORIGINAL -->
         <video id="video"
                class="img-layer"
                style="object-fit: cover; z-index: 1;"
@@ -17,15 +16,24 @@
                playsinline>
         </video>
         
-        <!-- VIDEO FILTRADO -->
-        <video id="videoFiltered"
-               class="img-layer top-layer"
-               style="object-fit: cover; z-index: 2;"
-               autoplay
-               playsinline>
-        </video>
+        <div id="compareWrapper" class="compare-wrapper" style="z-index: 1;">
+            <img id="imgOriginal" class="img-layer" alt="Original">
+            </div>
 
-        <!-- CANVAS MEDIAPIPE (NUEVO) -->
+        <canvas
+            id="filteredCanvas"
+            class="img-layer top-layer"
+            style="
+                position:absolute;
+                top:0;
+                left:0;
+                width:100%;
+                height:100%;
+                object-fit: cover;
+                z-index: 2; /* Encima de los fondos, debajo del slider */
+                pointer-events:none;">
+        </canvas>
+
         <canvas
             id="faceMeshCanvas"
             class="img-layer" 
@@ -35,24 +43,16 @@
                 left:0;
                 width:100%;
                 height:100%;
-                z-index: 20; /* Subimos el z-index para que esté encima del slider y textos */
+                z-index: 20; /* Siempre arriba de todo */
                 pointer-events:none;">
         </canvas>
 
 
-        <!-- COMPARADOR DE IMÁGENES -->
-        <div id="compareWrapper" class="compare-wrapper" style="z-index: 3;">
-            <img id="imgOriginal" class="img-layer" alt="Original">
-            <img id="imgFiltered" class="img-layer top-layer" alt="Con crema">
-        </div>
-
-        <!-- DIVISOR -->
         <div class="compare-divider"
              id="divider"
              style="z-index: 10; display: none;">
         </div>
 
-        <!-- TEXTO CUANDO NO HAY IMAGEN -->
         <div id="noImageText"
              class="no-image-content"
              style="z-index: 20;">
@@ -77,7 +77,6 @@
         </div>
     </div>
 
-    <!-- SLIDER -->
     <div class="slider-row"
          id="mainSliderRow"
          style="display: none;">
@@ -91,7 +90,6 @@
                value="50">
     </div>
 
-    <!-- PRODUCTOS -->
     <div class="products-strip-container">
         <h3 data-i18n="VIEWER.PRODUCTS_TITLE"></h3>
         <div class="products-strip">

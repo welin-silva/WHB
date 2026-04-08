@@ -1,13 +1,11 @@
 // ==========================================
 // CONFIGURACIÓN PARA EL EQUIPO (FLAGS FRONTEND)
 // ==========================================
-// Cambiar a 'false' para apagar la malla verde en pantalla (ideal para trabajar en backend)
 const ENABLE_LIVE_MESH = true; 
 
 // ==========================================
 // CONTROLADOR PRINCIPAL (Botones y Backend)
 // ==========================================
-
 const btnSelfie = document.getElementById("btnSelfie");
 const fileInput = document.getElementById("fileInput");
 
@@ -19,12 +17,11 @@ const resultadoDiv = document.getElementById("resultado");
 // VIDEO + CANVAS
 const videoElement = document.getElementById("video");
 const canvasElement = document.getElementById("faceMeshCanvas");
-const canvasCtx = canvasElement.getContext("2d");
+const canvasCtx = canvasElement ? canvasElement.getContext("2d") : null;
 
 // ==========================================
 // A. GESTIÓN DE PRODUCTOS
 // ==========================================
-
 const productThumbs = document.querySelectorAll(".product-thumb");
 
 productThumbs.forEach(thumb => {
@@ -40,20 +37,20 @@ productThumbs.forEach(thumb => {
 // ==========================================
 // B. MEDIAPIPE FACE MESH (TIEMPO REAL)
 // ==========================================
-
 let faceMesh = null;
-let cameraMP = null;
 let mediaPipeActivo = false;
 
-function initMediaPipe() {
-    // 🛑 INTERRUPTOR: Si está apagado, salimos de la función y no dibujamos nada
-    if (!ENABLE_LIVE_MESH) return;
+// Variables para el escáner automático
+let isScanning = false;
+let scanTimer = 5;
+let scanInterval = null;
 
+function initMediaPipe() {
+    if (!ENABLE_LIVE_MESH) return;
     if (mediaPipeActivo || !videoElement) return;
 
     faceMesh = new FaceMesh({
-        locateFile: (file) =>
-            `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
     });
 
     faceMesh.setOptions({
@@ -64,28 +61,17 @@ function initMediaPipe() {
     });
 
    faceMesh.onResults((results) => {
-        if (!results.multiFaceLandmarks || !videoElement.videoWidth) return;
+        if (!results.multiFaceLandmarks || !videoElement.videoWidth || !canvasElement) return;
 
-        // --- CORRECCIÓN 1: RESOLUCIÓN ---
         canvasElement.width = videoElement.videoWidth;
         canvasElement.height = videoElement.videoHeight;
-
         canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
         const lm = results.multiFaceLandmarks[0];
 
-        // --- CORRECCIÓN 2: DIBUJADO LIMPIO ---
-        drawConnectors(
-            canvasCtx,
-            lm,
-            FACEMESH_TESSELATION,
-            {
-                color: "#00ffcc",
-                lineWidth: 1
-            }
-        );
+        drawConnectors(canvasCtx, lm, FACEMESH_TESSELATION, { color: "#00ffcc", lineWidth: 1 });
 
-        // ===== VALORACIÓN EN TIEMPO REAL =====
+        // ===== TU VALORACIÓN EN TIEMPO REAL =====
         const ojoIzq = lm[159].y - lm[145].y;
         const ojoDer = lm[386].y - lm[374].y;
 
@@ -98,39 +84,32 @@ function initMediaPipe() {
         mensajes.push("Rostro correctamente detectado");
         mensajes.push("Textura facial uniforme");
 
-        resultadoDiv.innerHTML = `
-            <strong>Valoración en tiempo real:</strong>
-            <ul>
-                ${mensajes.map(m => `<li>${m}</li>`).join("")}
-            </ul>
-        `;
+        if (isScanning && resultadoDiv) {
+            resultadoDiv.innerHTML = `
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <h3 style="color: #00ffcc; font-size: 24px; margin: 0;">Escaneando... ${scanTimer}s</h3>
+                </div>
+                <strong>Valoración en tiempo real:</strong>
+                <ul>
+                    ${mensajes.map(m => `<li>${m}</li>`).join("")}
+                </ul>
+            `;
+        }
     });
 
-    cameraMP = new Camera(videoElement, {
-        onFrame: async () => {
-            if (mediaPipeActivo) {
-                await faceMesh.send({ image: videoElement });
-            }
-        },
-        width: 640,
-        height: 480
-    });
-
-    cameraMP.start();
     mediaPipeActivo = true;
+    
+    // EL ARREGLO DEL MOTOR: Bucle inteligente que NO bloquea la cámara
+    const bucleFaceMesh = async () => {
+        if (!mediaPipeActivo || !videoElement || videoElement.paused) return;
+        await faceMesh.send({ image: videoElement });
+        requestAnimationFrame(bucleFaceMesh);
+    };
+    bucleFaceMesh();
 }
 
 function stopMediaPipe() {
-    if (!mediaPipeActivo) return;
-
     mediaPipeActivo = false;
-
-    if (cameraMP) {
-        cameraMP.stop();
-        cameraMP = null;
-    }
-
-    // Asegurarnos de limpiar el canvas al detener
     if (canvasCtx && canvasElement) {
         canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
     }
@@ -139,9 +118,8 @@ function stopMediaPipe() {
 // ==========================================
 // C. BACKEND (ANÁLISIS POR FOTO)
 // ==========================================
-
 async function enviarImagenParaAnalisis(dataUrl) {
-    resultadoDiv.textContent = "Analizando tu piel con IA...";
+    if(resultadoDiv) resultadoDiv.textContent = "Analizando tu piel con IA...";
 
     try {
         const res = await fetch("/analizar_piel", {
@@ -152,7 +130,7 @@ async function enviarImagenParaAnalisis(dataUrl) {
 
         const data = await res.json();
         if (!res.ok) {
-            resultadoDiv.textContent = "Error en el análisis.";
+            if(resultadoDiv) resultadoDiv.textContent = "Error en el análisis.";
             return;
         }
 
@@ -176,7 +154,6 @@ async function enviarImagenParaAnalisis(dataUrl) {
             }
         }
 
-        // MOSTRAR DATOS DE OPENCV SI EXISTEN
         if (data.metrics) {
             html += "<br><strong>Métricas de Piel (OpenCV):</strong><ul>";
             for (const [key, value] of Object.entries(data.metrics)) {
@@ -185,7 +162,6 @@ async function enviarImagenParaAnalisis(dataUrl) {
             html += "</ul>";
         }
 
-        // MOSTRAR DATOS DE DEEPFACE SI EXISTEN
         if (data.face) {
             html += "<br><strong>Análisis Facial (DeepFace):</strong><ul>";
             html += `<li>Edad estimada: ${data.face.edad_estimada}</li>`;
@@ -193,31 +169,72 @@ async function enviarImagenParaAnalisis(dataUrl) {
             html += "</ul>";
         }
 
-        resultadoDiv.innerHTML = html;
+        if(resultadoDiv) resultadoDiv.innerHTML = html;
 
     } catch (err) {
-        resultadoDiv.textContent = "Error de conexión con el servidor.";
+        if(resultadoDiv) resultadoDiv.textContent = "Error de conexión con el servidor.";
     }
 }
 
 // ==========================================
-// D. ACCIONES DE USUARIO
+// D. ESCÁNER AUTOMÁTICO
 // ==========================================
+function empezarEscaneoAutomatico() {
+    if (scanInterval) clearInterval(scanInterval);
+    isScanning = true;
+    scanTimer = 5;
 
+    scanInterval = setInterval(() => {
+        scanTimer--;
+
+        if (scanTimer <= 0) {
+            clearInterval(scanInterval);
+            isScanning = false;
+            
+            if(resultadoDiv) resultadoDiv.innerHTML = "<h3 style='color:#00ffcc'>¡Escaneo Completado!</h3><p>Procesando análisis dermatológico profundo...</p>";
+            
+            // Extraer foto real
+            const canvasTemp = document.createElement("canvas");
+            canvasTemp.width = videoElement.videoWidth;
+            canvasTemp.height = videoElement.videoHeight;
+            const ctxTemp = canvasTemp.getContext("2d");
+            ctxTemp.drawImage(videoElement, 0, 0);
+            const dataUrl = canvasTemp.toDataURL("image/jpeg", 0.9);
+
+            stopMediaPipe();
+            
+            // Apagar cámara física
+            const stream = videoElement.srcObject;
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                videoElement.srcObject = null;
+            }
+            
+            if (window.cargarImagenEnComparador) window.cargarImagenEnComparador(dataUrl);
+            enviarImagenParaAnalisis(dataUrl);
+        }
+    }, 1000);
+}
+
+// ==========================================
+// E. ACCIONES DE USUARIO
+// ==========================================
 const ejecutarModoSelfie = () => {
-    resultadoDiv.textContent = "Activa la cámara y mira al frente.";
+    if(resultadoDiv) resultadoDiv.innerHTML = "<strong>Iniciando cámara...</strong><br>Mira de frente y relaja el rostro.";
 
     if (window.iniciarCamaraYCapturar) {
-        window.iniciarCamaraYCapturar((dataUrl) => {
-            stopMediaPipe();
-            enviarImagenParaAnalisis(dataUrl);
-        });
-
-        setTimeout(initMediaPipe, 500);
+        window.iniciarCamaraYCapturar(); 
+        
+        setTimeout(() => {
+            initMediaPipe();
+            empezarEscaneoAutomatico();
+        }, 1000);
     }
 };
 
 const ejecutarSubidaFoto = (e) => {
+    if (scanInterval) clearInterval(scanInterval);
+    isScanning = false;
     stopMediaPipe();
 
     const file = e.target.files[0];
@@ -226,15 +243,11 @@ const ejecutarSubidaFoto = (e) => {
     const reader = new FileReader();
     reader.onload = evt => {
         const dataUrl = evt.target.result;
-        if (window.cargarImagenEnComparador) cargarImagenEnComparador(dataUrl);
+        if (window.cargarImagenEnComparador) window.cargarImagenEnComparador(dataUrl);
         enviarImagenParaAnalisis(dataUrl);
     };
     reader.readAsDataURL(file);
 };
-
-// ==========================================
-// E. EVENTOS
-// ==========================================
 
 if (btnSelfie) btnSelfie.addEventListener("click", ejecutarModoSelfie);
 if (fileInput) fileInput.addEventListener("change", ejecutarSubidaFoto);

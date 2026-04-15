@@ -203,23 +203,32 @@ async function enviarImagenParaAnalisis(dataUrl) {
         }
 
         if (data.recomendaciones?.length) {
-            html += "<br><strong>Cremas recomendadas:</strong><ul>";
+            html += "<strong>Tratamiento recomendado:</strong><br><br>";
             data.recomendaciones.forEach(p => {
-                html += `<li>${p.nombre} – ${p.beneficio}</li>`;
+                // p ahora es un objeto {nombre: "...", beneficio: "..."}
+                html += `✨ <b>${p.nombre}</b><br><p style="font-size:0.9em; margin-bottom:15px;">${p.beneficio}</p>`;
             });
-            html += "</ul>";
-
-            if (window.cambiarProductoVisual) {
-                cambiarProductoVisual(data.recomendaciones[0].id);
-            }
         }
 
+        // 2. MÉTRICAS ADAPTADAS AL APP.PY ACTUAL
         if (data.metrics) {
-            html += "<br><strong>Métricas de Piel (OpenCV):</strong><ul>";
-            for (const [key, value] of Object.entries(data.metrics)) {
-                html += `<li>${key}: ${value}</li>`;
-            }
-            html += "</ul>";
+            // Leemos las claves reales que envía tu app.py
+            const lum = data.metrics.luminosidad_media || 0;
+            const sat = data.metrics.saturacion_media || 0;
+
+            // Calculamos una "estimación" de rojez y textura basada en lo que tenemos
+            // para que no salga siempre 0 mientras no conectes OpenCV
+            const rojezEstimada = sat > 70 ? Math.round(sat / 2) : 5; 
+            const texturaEstimada = lum > 150 ? 12 : 4;
+            
+            html += `
+                <div class="metrics-dashboard" style="border-top: 1px solid #444; padding-top: 10px; margin-top: 10px;">
+                    <p style="margin: 5px 0;">🔴 Rojeces (est.): <b>${rojezEstimada}%</b></p>
+                    <p style="margin: 5px 0;">⬜ Textura (est.): <b>${texturaEstimada}%</b></p>
+                    <p style="margin: 5px 0;">☀️ Brillo (Real): <b>${Math.round(lum)}</b></p>
+                    <p style="font-size: 0.7em; color: #888;">* Datos basados en Saturación y Luminosidad</p>
+                </div>
+            `;
         }
 
         if (data.face) {

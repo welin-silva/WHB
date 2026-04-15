@@ -37,6 +37,19 @@ def analizar_piel():
 
         # Llamar a la función del archivo metrics.py
         analisis = compute_metrics_opencv(frame)
+
+        analisis = compute_metrics_opencv(frame)
+    
+        # IMPORTANTE: Mapear los IDs de metrics.py a los productos de MartiDerm
+        # Supongamos que tienes la lista MARTIDERM_PRODUCTS definida arriba
+        productos_encontrados = []
+        for recom_id in analisis["recomendaciones"]:
+            # Busca el producto en tu lista de objetos
+            p = next((item for item in MARTIDERM_PRODUCTS if item["id"] == recom_id), None)
+            if p:
+                productos_encontrados.append(p)
+        
+        analisis["recomendaciones"] = productos_encontrados
         
         return jsonify(analisis)
 

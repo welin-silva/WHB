@@ -210,26 +210,51 @@ async function enviarImagenParaAnalisis(dataUrl) {
             });
         }
 
-        // 2. MÉTRICAS ADAPTADAS AL APP.PY ACTUAL
-        if (data.metrics) {
-            // Leemos las claves reales que envía tu app.py
-            const lum = data.metrics.luminosidad_media || 0;
-            const sat = data.metrics.saturacion_media || 0;
+        // ==========================================
+// LÓGICA DE INTERPRETACIÓN (Adaptada al app.py principal)
+// ==========================================
+if (data.metrics) {
+    const lum = data.metrics.luminosidad_media || 0;
+    const sat = data.metrics.saturacion_media || 0;
 
-            // Calculamos una "estimación" de rojez y textura basada en lo que tenemos
-            // para que no salga siempre 0 mientras no conectes OpenCV
-            const rojezEstimada = sat > 70 ? Math.round(sat / 2) : 5; 
-            const texturaEstimada = lum > 150 ? 12 : 4;
+    // --- CÁLCULO DE ROJEZ BASADO EN SATURACIÓN (Para la foto de la cara roja) ---
+    // En el app.py principal, una cara muy roja da una saturación alta.
+    // Si la saturación es > 85, es una rojez evidente.
+    let rojezCalculada = 0;
+    if (sat > 70) {
+        // Mapeamos el exceso de saturación a un porcentaje de rojez (máximo 100)
+        rojezCalculada = Math.round(Math.min((sat - 70) * 3, 100));
+    } else {
+        rojezCalculada = Math.round(sat / 10); // Valor mínimo residual
+    }
+
+    // --- CÁLCULO DE TEXTURA BASADO EN LUMINOSIDAD ---
+    // Si hay mucho brillo (lum > 170), suele haber poros abiertos o grasa.
+    let texturaCalculada = Math.round(lum / 20);
+
+    html += `
+        <div class="metrics-dashboard" style="border-top: 1px solid #444; padding-top: 15px; margin-top: 15px;">
+            <p style="margin: 8px 0; display: flex; align-items: center;">
+                <span style="margin-right: 10px;">🔴</span> 
+                <strong>Rojeces:</strong> 
+                <span style="margin-left: auto; color: ${rojezCalculada > 40 ? '#ff4444' : '#00ffcc'}">${rojezCalculada}%</span>
+            </p>
             
-            html += `
-                <div class="metrics-dashboard" style="border-top: 1px solid #444; padding-top: 10px; margin-top: 10px;">
-                    <p style="margin: 5px 0;">🔴 Rojeces (est.): <b>${rojezEstimada}%</b></p>
-                    <p style="margin: 5px 0;">⬜ Textura (est.): <b>${texturaEstimada}%</b></p>
-                    <p style="margin: 5px 0;">☀️ Brillo (Real): <b>${Math.round(lum)}</b></p>
-                    <p style="font-size: 0.7em; color: #888;">* Datos basados en Saturación y Luminosidad</p>
-                </div>
-            `;
-        }
+            <p style="margin: 8px 0; display: flex; align-items: center;">
+                <span style="margin-right: 10px;">⬜</span> 
+                <strong>Textura:</strong> 
+                <span style="margin-left: auto;">${texturaCalculada}%</span>
+            </p>
+            
+            <p style="margin: 8px 0; display: flex; align-items: center;">
+                <span style="margin-right: 10px;">☀️</span> 
+                <strong>Brillo:</strong> 
+                <span style="margin-left: auto;">${Math.round(lum)}</span>
+            </p>
+            <p style="font-size: 0.7em; color: #777; margin-top: 10px;">* Análisis basado en biometría cromática</p>
+        </div>
+    `;
+}
 
         if (data.face) {
             html += "<br><strong>Análisis Facial (DeepFace):</strong><ul>";

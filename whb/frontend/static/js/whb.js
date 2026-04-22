@@ -175,11 +175,25 @@ function stopMediaPipe() {
 }
 
 // ==========================================
-// C. BACKEND (ANÁLISIS POR FOTO)
+// C. BACKEND (ANÁLISIS POR FOTO) - ACTUALIZADO WHB
 // ==========================================
 
 async function enviarImagenParaAnalisis(dataUrl) {
-    resultadoDiv.textContent = "Analizando tu piel con IA...";
+    // 1. Referencias de los tres paneles del HTML
+    const resultadoPiel = document.getElementById("resultado");
+    const resultadoBio = document.getElementById("resultadoAvanzado");
+    const resultadoRasgos = document.getElementById("resultadoDeepFace");
+    
+    // 2. ESTADOS DE CARGA (Spinners)
+    const loader = (msg) => `
+        <div style="display: flex; flex-direction: column; align-items: center; padding: 10px; color: #888;">
+            <div class="spinner-simple" style="width: 18px; height: 18px; border: 2px solid #333; border-top-color: #00ffcc; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 8px;"></div>
+            <p style="font-size: 0.8em; margin:0;">${msg}</p>
+        </div>`;
+
+    resultadoPiel.innerHTML = loader("Analizando color...");
+    resultadoBio.innerHTML = loader("Calculando biometría...");
+    resultadoRasgos.innerHTML = loader("Detectando rasgos...");
 
     try {
         const res = await fetch("/analizar_piel", {
@@ -189,84 +203,69 @@ async function enviarImagenParaAnalisis(dataUrl) {
         });
 
         const data = await res.json();
-        if (!res.ok) {
-            resultadoDiv.textContent = "Error en el análisis.";
-            return;
+        if (!res.ok) throw new Error("Error en respuesta del servidor");
+
+        // --- 1. PANEL: VALORACIÓN DE TU PIEL (OpenCV / HSV) ---
+        if (data.metrics) {
+            resultadoPiel.innerHTML = `
+                <ul style="font-size: 0.9em; line-height: 1.6;">
+                    <li><b>Luminosidad:</b> ${Math.round(data.metrics.luminosidad_media || data.metrics.luminosidad)}</li>
+                    <li><b>Saturación:</b> ${Math.round(data.metrics.saturacion_media || data.metrics.saturacion)}</li>
+                </ul>
+                <p style="font-size: 0.75em; color: #777;">Análisis de pigmentación base completado.</p>
+            `;
         }
 
-        let html = "";
-
+        // --- 2. PANEL: ANÁLISIS BIOMÉTRICO (Recomendaciones y Gráfico) ---
+        let htmlBio = "";
         if (data.problemas?.length) {
-            html += "<strong>Puntos detectados:</strong><ul>";
-            data.problemas.forEach(p => html += `<li>${p}</li>`);
-            html += "</ul>";
+            htmlBio += "<b>Puntos detectados:</b><ul style='font-size:0.85em;'>";
+            data.problemas.forEach(p => htmlBio += `<li>${p}</li>`);
+            htmlBio += "</ul>";
         }
 
         if (data.recomendaciones?.length) {
-            html += "<strong>Tratamiento recomendado:</strong><br><br>";
+            htmlBio += "<b>Tratamiento recomendado:</b><br>";
             data.recomendaciones.forEach(p => {
-                // p ahora es un objeto {nombre: "...", beneficio: "..."}
-                html += `✨ <b>${p.nombre}</b><br><p style="font-size:0.9em; margin-bottom:15px;">${p.beneficio}</p>`;
+                htmlBio += `
+                    <div style="margin-top: 10px; border-left: 2px solid #f1d592; padding-left: 10px;">
+                        <span style="font-size:0.9em; color:#f1d592;">✨ ${p.nombre}</span>
+                        <p style="font-size:0.8em; color:#aaa; margin:2px 0;">${p.beneficio}</p>
+                    </div>`;
             });
         }
+        resultadoBio.innerHTML = htmlBio;
 
-        // ==========================================
-// LÓGICA DE INTERPRETACIÓN (Adaptada al app.py principal)
-// ==========================================
-if (data.metrics) {
-    const lum = data.metrics.luminosidad_media || 0;
-    const sat = data.metrics.saturacion_media || 0;
-
-    // --- CÁLCULO DE ROJEZ BASADO EN SATURACIÓN (Para la foto de la cara roja) ---
-    // En el app.py principal, una cara muy roja da una saturación alta.
-    // Si la saturación es > 85, es una rojez evidente.
-    let rojezCalculada = 0;
-    if (sat > 70) {
-        // Mapeamos el exceso de saturación a un porcentaje de rojez (máximo 100)
-        rojezCalculada = Math.round(Math.min((sat - 70) * 3, 100));
-    } else {
-        rojezCalculada = Math.round(sat / 10); // Valor mínimo residual
-    }
-
-    // --- CÁLCULO DE TEXTURA BASADO EN LUMINOSIDAD ---
-    // Si hay mucho brillo (lum > 170), suele haber poros abiertos o grasa.
-    let texturaCalculada = Math.round(lum / 20);
-
-    html += `
-        <div class="metrics-dashboard" style="border-top: 1px solid #444; padding-top: 15px; margin-top: 15px;">
-            <p style="margin: 8px 0; display: flex; align-items: center;">
-                <span style="margin-right: 10px;">🔴</span> 
-                <strong>Rojeces:</strong> 
-                <span style="margin-left: auto; color: ${rojezCalculada > 40 ? '#ff4444' : '#00ffcc'}">${rojezCalculada}%</span>
-            </p>
-            
-            <p style="margin: 8px 0; display: flex; align-items: center;">
-                <span style="margin-right: 10px;">⬜</span> 
-                <strong>Textura:</strong> 
-                <span style="margin-left: auto;">${texturaCalculada}%</span>
-            </p>
-            
-            <p style="margin: 8px 0; display: flex; align-items: center;">
-                <span style="margin-right: 10px;">☀️</span> 
-                <strong>Brillo:</strong> 
-                <span style="margin-left: auto;">${Math.round(lum)}</span>
-            </p>
-            <p style="font-size: 0.7em; color: #777; margin-top: 10px;">* Análisis basado en biometría cromática</p>
-        </div>
-    `;
-}
-
+        // --- 3. PANEL: ANÁLISIS DE RASGOS (DeepFace) ---
         if (data.face) {
-            html += "<br><strong>Análisis Facial (DeepFace):</strong><ul>";
-            html += `<li>Edad estimada: ${data.face.edad_estimada}</li>`;
-            html += `<li>Emoción: ${data.face.emocion}</li>`;
-            html += "</ul>";
+            const traducir = (emo) => {
+                const mapa = {
+                    'happy': 'Vital / Radiante', 'neutral': 'Relajado',
+                    'sad': 'Fatigado', 'angry': 'Tenso', 'surprise': 'Asombrado', 'fear': 'Estresado'
+                };
+                return mapa[emo] || emo;
+            };
+
+            resultadoRasgos.innerHTML = `
+                <div style="background: rgba(209, 179, 255, 0.05); padding: 10px; border-radius: 5px;">
+                    <p style="margin: 0 0 5px 0;">📅 <b>Edad estimada:</b> ${data.face.age} años</p>
+                    <p style="margin: 0;">🎭 <b>Estado actual:</b> ${traducir(data.face.dominant_emotion)}</p>
+                    <p style="font-size: 0.7em; color: #888; margin-top: 8px;">* Basado en micro-expresiones faciales.</p>
+                </div>`;
+        } else {
+            resultadoRasgos.innerHTML = "<p class='small'>No se detectó rostro para el análisis profundo.</p>";
         }
 
-        resultadoDiv.innerHTML = html;
+        // AUTO-PRODUCTO: Cambiar la visualización 3D si existe el producto
+        if (window.cambiarProductoVisual && data.recomendaciones?.length > 0) {
+            window.cambiarProductoVisual(data.recomendaciones[0].id);
+        }
 
     } catch (err) {
-        resultadoDiv.textContent = "Error de conexión con el servidor.";
+        console.error(err);
+        resultadoPiel.textContent = "Error de conexión.";
+        resultadoBio.textContent = "Error en análisis avanzado.";
+        resultadoRasgos.textContent = "Error en motor DeepFace.";
     }
 }
 

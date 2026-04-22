@@ -1,11 +1,17 @@
-from flask import Flask, render_template, request, jsonify
+import os
+import cv2
 import base64
 import io
-from PIL import Image
 import numpy as np
-# IA (para usar más adelante)
-# import cv2
-# import mediapipe as mp
+from flask import Flask, render_template, request, jsonify
+from PIL import Image
+
+# Importamos la lógica de IA avanzada
+try:
+    from analysis import analyze_frame
+except ImportError:
+    print("Aviso: analysis.py no encontrado. Solo funcionará el análisis sencillo.")
+    def analyze_frame(frame): return {}
 
 app = Flask(
     __name__,
@@ -13,62 +19,31 @@ app = Flask(
     static_folder="../frontend/static"
 )
 
+# Silenciar avisos de TensorFlow
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 # -----------------------------
-# Productos WHB (los de tu imagen)
+# Productos WHB (Martiderm)
 # -----------------------------
 MARTIDERM_PRODUCTS = [
-    {
-        "id": "arrugas",
-        "nombre": "Black Diamond Epigence SPF 50+ (Arrugas)",
-        "beneficio": "-36% arrugas / líneas de expresión",
-        "imagen_url": "/static/img/arrugas.jpeg"
-    },
-    {
-        "id": "manchas",
-        "nombre": "Pigment Zero - DSP-Cover (DSP-Cream (Manchas))",
-        "beneficio": "65% tono más uniforme",
-        "imagen_url": "/static/img/manchas.jpeg"
-    },
-    {
-        "id": "firmeza",
-        "nombre": "Black Diamond Skin Complex Advanced (Firmeza)",
-        "beneficio": "24% piel más firme",
-        "imagen_url": "/static/img/firmeza.jpeg"
-    },
-    {
-        "id": "piel_apagada",
-        "nombre": "Booster - Serum Ultimate Antiox (Piel apagada)",
-        "beneficio": "91% piel más luminosa",
-        "imagen_url": "/static/img/piel_apagada.jpeg"
-    },
-    {
-        "id": "acne",
-        "nombre": "Acniover - Crema Tratante (Acné / Imperfecciones)",
-        "beneficio": "35% imperfecciones",
-        "imagen_url": "/static/img/acne.jpeg"
-    },
+    {"id": "arrugas", "nombre": "Black Diamond Epigence SPF 50+ (Arrugas)", "beneficio": "-36% arrugas / líneas de expresión", "imagen_url": "/static/img/arrugas.jpeg"},
+    {"id": "manchas", "nombre": "Pigment Zero - DSP-Cover (DSP-Cream (Manchas))", "beneficio": "65% tono más uniforme", "imagen_url": "/static/img/manchas.jpeg"},
+    {"id": "firmeza", "nombre": "Black Diamond Skin Complex Advanced (Firmeza)", "beneficio": "24% piel más firme", "imagen_url": "/static/img/firmeza.jpeg"},
+    {"id": "piel_apagada", "nombre": "Booster - Serum Ultimate Antiox (Piel apagada)", "beneficio": "91% piel más luminosa", "imagen_url": "/static/img/piel_apagada.jpeg"},
+    {"id": "acne", "nombre": "Acniover - Crema Tratante (Acné / Imperfecciones)", "beneficio": "35% imperfecciones", "imagen_url": "/static/img/acne.jpeg"},
 ]
 
-
 # -----------------------------
-# Lógica sencilla de “IA” de demo
+# Lógica "Valoración de tu piel" (NO TOCADA)
 # -----------------------------
 def buscar_producto(pid: str):
     for p in MARTIDERM_PRODUCTS:
-        if p["id"] == pid:
-            return p
+        if p["id"] == pid: return p
     return None
 
-
 def analizar_piel_sencillo(imagen_pil: Image.Image) -> dict:
-    """
-    Análisis sencillo con 'IA ligera' para demo.
-    Más adelante aquí conectaremos OpenCV + MediaPipe para:
-      - landmarks faciales
-      - detección de zonas concretas
-    """
+    # --- Mantenemos tu lógica HSV intacta ---
     img = np.array(imagen_pil.resize((256, 256)))
-
     hsv = Image.fromarray(img).convert("HSV")
     hsv_np = np.array(hsv)
 
@@ -88,6 +63,7 @@ def analizar_piel_sencillo(imagen_pil: Image.Image) -> dict:
         problemas.append("Tono poco uniforme, posible apariencia de manchas suaves")
         recomendaciones.append(buscar_producto("manchas"))
 
+    # Recomendaciones por defecto de tu código original
     if buscar_producto("arrugas") not in recomendaciones:
         recomendaciones.append(buscar_producto("arrugas"))
         problemas.append("Líneas de expresión en contorno de ojos / frente (estimado)")
@@ -100,10 +76,10 @@ def analizar_piel_sencillo(imagen_pil: Image.Image) -> dict:
         recomendaciones.append(buscar_producto("acne"))
         problemas.append("Posibles imperfecciones o textura irregular (estimado)")
 
-    recomendaciones = [p for p in recomendaciones if p]
+    # Limpieza de duplicados original
     unique = []
     seen = set()
-    for p in recomendaciones:
+    for p in [r for r in recomendaciones if r]:
         if p["id"] not in seen:
             seen.add(p["id"])
             unique.append(p)
@@ -117,7 +93,6 @@ def analizar_piel_sencillo(imagen_pil: Image.Image) -> dict:
         }
     }
 
-
 # -----------------------------
 # Rutas Flask
 # -----------------------------
@@ -125,31 +100,54 @@ def analizar_piel_sencillo(imagen_pil: Image.Image) -> dict:
 def index():
     return render_template("index.html", productos=MARTIDERM_PRODUCTS)
 
-
 @app.route("/analizar_piel", methods=["POST"])
 def analizar_piel_api():
-    """
-    Endpoint que recibe una imagen en base64 (data URL)
-    y devuelve el análisis sencillo.
-    """
     data = request.get_json() or {}
     image_data = data.get("image")
 
     if not image_data:
         return jsonify({"error": "No se ha recibido imagen"}), 400
 
-    if "," in image_data:
-        image_data = image_data.split(",", 1)[1]
-
     try:
+        # 1. Decodificar imagen
+        if "," in image_data:
+            image_data = image_data.split(",", 1)[1]
         image_bytes = base64.b64decode(image_data)
-        imagen = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+        
+        # Imagen para tu lógica PIL (HSV)
+        imagen_pil = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+        
+        # Imagen para la lógica OpenCV (DeepFace/MediaPipe)
+        frame_cv = cv2.cvtColor(np.array(imagen_pil), cv2.COLOR_RGB2BGR)
+
+        # 2. Ejecutar tu lógica original de Valoración
+        resultado = analizar_piel_sencillo(imagen_pil)
+
+        # 3. Ejecutar la IA de Rasgos (DeepFace)
+        try:
+            analisis_ia = analyze_frame(frame_cv)
+            
+            # Añadimos los campos de rasgos faciales al JSON sin tocar los de valoración
+            resultado.update({
+                "face_detected": analisis_ia.get("face_detected", False),
+                "face": analisis_ia.get("face"), # Aquí llega la edad y emoción
+                "landmarks": analisis_ia.get("landmarks"),
+                "warnings": analisis_ia.get("warnings", [])
+            })
+            
+            # Si la IA avanzada detecta problemas extra, los sumamos a los tuyos
+            for prob in analisis_ia.get("problemas", []):
+                if prob not in resultado["problemas"]:
+                    resultado["problemas"].append(prob)
+
+        except Exception as e:
+            print(f"Error en IA: {e}")
+            resultado["face_detected"] = False
+
+        return jsonify(resultado)
+
     except Exception as e:
-        return jsonify({"error": f"Imagen no válida: {e}"}), 400
-
-    resultado = analizar_piel_sencillo(imagen)
-    return jsonify(resultado)
-
+        return jsonify({"error": f"Error interno: {e}"}), 500
 
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000, debug=True)

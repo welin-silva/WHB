@@ -277,6 +277,11 @@ body {
     transition: all 0.3s ease;
 }
 
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
 #languageSwitcher:hover {
     background-color: #f0f0f0;
     border-color: #999;

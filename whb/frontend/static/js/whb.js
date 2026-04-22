@@ -275,7 +275,7 @@ async function enviarImagenParaAnalisis(dataUrl) {
 
 function empezarEscaneoAutomatico() {
     isScanning = true;
-    scanTimer = 5;
+    scanTimer = 6;
 
     scanInterval = setInterval(() => {
         scanTimer--;
@@ -305,24 +305,32 @@ function empezarEscaneoAutomatico() {
 const ejecutarModoSelfie = () => {
     resultadoDiv.innerHTML = "<strong>Iniciando cámara...</strong><br>Mira de frente y relaja el rostro.";
 
-    if (window.iniciarCamaraYCapturar) {
-        // Mantenemos tu función original que enciende el video
-        window.iniciarCamaraYCapturar((dataUrl) => {
-            // Esto se ejecuta si el usuario hace click manualmente antes de los 5 segundos
-            clearInterval(scanInterval);
-            isScanning = false;
-            stopMediaPipe();
-            enviarImagenParaAnalisis(dataUrl);
-        });
+    // --- ¡AQUÍ ESTÁ LA SOLUCIÓN! ---
+    // Ocultamos el menú central que tapa el video en directo
+    const capaCentral = document.getElementById("noImageText");
+    if (capaCentral) capaCentral.style.display = "none";
+    
+    // Por si acaso, aseguramos que el video esté visible
+    if (videoElement) videoElement.style.display = "block";
+    // -------------------------------
 
-        // Retrasamos el inicio del escaneo para darle tiempo a la cámara a encenderse
-        setTimeout(() => {
-            initMediaPipe();
-            empezarEscaneoAutomatico();
-        }, 800);
+    // Limpiamos intervalos anteriores
+    clearInterval(scanInterval);
+    isScanning = false;
+    
+    // 1. Iniciamos la cámara INMEDIATAMENTE (fuera del setTimeout)
+    initMediaPipe();
+    
+    // Forzamos al navegador a reproducir el video asociándolo a tu clic
+    if (videoElement) {
+        videoElement.play().catch(err => console.log("Cargando stream..."));
     }
+    
+    // 2. La cuenta atrás sí la retrasamos un poco para darte tiempo a prepararte
+    setTimeout(() => {
+        empezarEscaneoAutomatico();
+    }, 800);
 };
-
 const ejecutarSubidaFoto = (e) => {
     clearInterval(scanInterval);
     isScanning = false;

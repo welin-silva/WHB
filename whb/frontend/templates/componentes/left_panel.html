@@ -1,29 +1,42 @@
 <section class="left-panel">
     <div class="card">
-        <h2 data-i18n="LEFT_PANEL.TITLE_START"></h2>
-        <p class="small" data-i18n="LEFT_PANEL.INSTRUCTIONS"></p>
+        <h2 data-i18n="LEFT_PANEL.TITLE_START">¿Cómo quieres empezar?</h2>
+        <p class="small" data-i18n="LEFT_PANEL.INSTRUCTIONS">
+            1. Haz un selfie o sube una foto.<br>
+            2. La IA analiza tu piel.<br>
+            3. Prueba cada crema.
+        </p>
 
         <div class="button-group">
-            <button class="btn btn-primary" id="btnSelfie" data-i18n="LEFT_PANEL.SELFIE_MODE"></button>
-            <label for="fileInput" class="btn btn-secondary" data-i18n="LEFT_PANEL.UPLOAD_PHOTO"></label>
+            <button class="btn btn-primary" id="btnSelfie" data-i18n="LEFT_PANEL.SELFIE_MODE">Modo selfie</button>
+            <label for="fileInput" class="btn btn-secondary" data-i18n="LEFT_PANEL.UPLOAD_PHOTO">Subir foto</label>
             <input type="file" id="fileInput" accept="image/*" hidden>
         </div>
     </div>
 
     <div class="card" id="analysisCard">
-        <h2 data-i18n="LEFT_PANEL.ANALYSIS_TITLE"></h2>
+        <h2 data-i18n="LEFT_PANEL.ANALYSIS_TITLE">Valoración de tu piel</h2>
         <div id="resultado" class="resultado-text">
             <div id="initialMessage">
-                <p style="margin: 0; font-weight: 600;" data-i18n="LEFT_PANEL.INITIAL_MESSAGE"></p>
+                <p style="margin: 0; font-weight: 600;" data-i18n="LEFT_PANEL.INITIAL_MESSAGE">Esperando análisis...</p>
                 <p class="small" style="margin-top: 5px;" data-i18n="LEFT_PANEL.INITIAL_SUBMESSAGE">
+                    Inicia el escaneo para ver métricas de color.
                 </p>
             </div>
-            <div id="iaResults" style="display: none;">
-                <h3 class="analysis-title" data-i18n="LEFT_PANEL.ANALYSIS_POINTS_TITLE"></h3>
-                <div class="analysis-grid" id="analysisDataGrid"></div>
-                <h3 class="analysis-title" data-i18n="LEFT_PANEL.RECOMMENDATIONS_TITLE"></h3>
-                <ul class="simple-list" id="recommendationSummary"></ul>
-            </div>
+        </div>
+    </div>
+
+    <div class="card" id="advancedAnalysisCard" style="margin-top: 20px; border-top: 2px solid #f1d592;">
+        <h2 style="color: #f1d592;">Análisis Biométrico Avanzado</h2>
+        <div id="resultadoAvanzado" class="resultado-text">
+            <p class="small">Inicia el escaneo para ver puntos detectados y tratamiento.</p>
+        </div>
+    </div>
+
+    <div class="card" id="faceAnalysisCard" style="margin-top: 20px; border-top: 2px solid #d1b3ff;">
+        <h2 style="color: #d1b3ff;">Análisis de Rasgos Facial</h2>
+        <div id="resultadoDeepFace" class="resultado-text">
+            <p class="small">Esperando detección de rostro para análisis de profundidad...</p>
         </div>
     </div>
 </section>

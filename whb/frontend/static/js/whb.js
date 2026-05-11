@@ -24,18 +24,15 @@ const canvasCtx = canvasElement.getContext("2d");
 // ==========================================
 // A. GESTIÓN DE PRODUCTOS
 // ==========================================
+// El sistema de producto activo reside en el carrusel 3D (carrusel.js).
+// Esta función solo entrega la config del backend al motor 3D.
 
-const productThumbs = document.querySelectorAll(".product-thumb");
-
-productThumbs.forEach(thumb => {
-    thumb.addEventListener("click", () => {
-        productThumbs.forEach(t => t.classList.remove("active"));
-        thumb.classList.add("active");
-
-        const pid = thumb.dataset.productId;
-        if (window.cambiarProductoVisual) cambiarProductoVisual(pid);
-    });
-});
+function aplicarUiConfig(recomendaciones, uiConfig) {
+    if (!recomendaciones || !recomendaciones.length) return;
+    if (window.aplicarConfigCarrusel) {
+        setTimeout(() => window.aplicarConfigCarrusel(uiConfig, window._carouselConfig || null), 150);
+    }
+}
 
 // ==========================================
 // B. MOTOR BIOMÉTRICO MEDIAPIPE (TIEMPO REAL)
@@ -44,6 +41,9 @@ productThumbs.forEach(thumb => {
 let faceMesh = null;
 let cameraMP = null;
 let mediaPipeActivo = false;
+
+// Landmarks en coordenadas normalizadas — compartidos con comparador.js
+window.faceLandmarks = null;
 
 // Variables para el escáner automático
 let isScanning = false;
@@ -83,6 +83,7 @@ function initMediaPipe() {
         canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
         const lm = results.multiFaceLandmarks[0];
+        window.faceLandmarks = lm; // Disponibles para el canvas masking
 
         // --- CORRECCIÓN 2: DIBUJADO LIMPIO ---
         drawConnectors(
@@ -191,6 +192,9 @@ async function enviarImagenParaAnalisis(dataUrl) {
             <p style="font-size: 0.8em; margin:0;">${msg}</p>
         </div>`;
 
+    // Devolver carrusel al estado completo antes del nuevo análisis
+    if (window.resetCarrusel) window.resetCarrusel();
+
     resultadoPiel.innerHTML = loader("Analizando color...");
     resultadoBio.innerHTML = loader("Calculando biometría...");
     resultadoRasgos.innerHTML = loader("Detectando rasgos...");
@@ -216,49 +220,74 @@ async function enviarImagenParaAnalisis(dataUrl) {
             `;
         }
 
-        // --- 2. PANEL: ANÁLISIS BIOMÉTRICO (Recomendaciones y Gráfico) ---
+        // --- 2. PANEL: ANÁLISIS BIOMÉTRICO ---
+        // Colores servidos por app.py dentro de data.ui_config
+        const uiCfg = data.ui_config || {};
         let htmlBio = "";
+
         if (data.problemas?.length) {
-            htmlBio += "<b>Puntos detectados:</b><ul style='font-size:0.85em;'>";
-            data.problemas.forEach(p => htmlBio += `<li>${p}</li>`);
+            htmlBio += `<b style="font-size:0.8em;letter-spacing:0.05em;color:#94a3b8;">PUNTOS DETECTADOS</b>
+                        <ul style="font-size:0.85em;margin-top:6px;padding-left:0;list-style:none;">`;
+            data.problemas.forEach(prob => {
+                // El color viene del ui_config del producto asociado (si existe)
+                const rec   = data.recomendaciones?.find(r => uiCfg[r.id]?.is_recommended);
+                const color = rec ? (uiCfg[rec.id]?.glow_color || "#94a3b8") : "#94a3b8";
+                htmlBio += `<li style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+                    <span style="width:8px;height:8px;border-radius:50%;background:${color};flex-shrink:0;"></span>
+                    <span>${prob}</span>
+                </li>`;
+            });
             htmlBio += "</ul>";
         }
 
         if (data.recomendaciones?.length) {
-            htmlBio += "<b>Tratamiento recomendado:</b><br>";
+            htmlBio += `<b style="font-size:0.8em;letter-spacing:0.05em;color:#94a3b8;display:block;margin-top:12px;">TRATAMIENTO PRESCRITO</b>`;
             data.recomendaciones.forEach(p => {
+                const color = p.ui_config?.glow_color || "#f1d592";
                 htmlBio += `
-                    <div style="margin-top: 10px; border-left: 2px solid #f1d592; padding-left: 10px;">
-                        <span style="font-size:0.9em; color:#f1d592;">✨ ${p.nombre}</span>
-                        <p style="font-size:0.8em; color:#aaa; margin:2px 0;">${p.beneficio}</p>
+                    <div style="margin-top:8px;border-left:3px solid ${color};padding:6px 10px;background:rgba(255,255,255,0.03);border-radius:0 6px 6px 0;">
+                        <span style="font-size:0.85em;color:${color};font-weight:600;">◈ ${p.nombre}</span>
+                        <p style="font-size:0.78em;color:#aaa;margin:3px 0 0;">${p.beneficio}</p>
                     </div>`;
             });
+        } else {
+            htmlBio += `<p style="color:#94a3b8;font-size:0.85em;margin-top:10px;">Sin alteraciones detectadas. Piel en parámetros nominales.</p>`;
         }
         resultadoBio.innerHTML = htmlBio;
 
         // --- 3. PANEL: ANÁLISIS DE RASGOS (DeepFace) ---
         if (data.face) {
-            const traducir = (emo) => {
-                const mapa = {
-                    'happy': 'Vital / Radiante', 'neutral': 'Relajado',
-                    'sad': 'Fatigado', 'angry': 'Tenso', 'surprise': 'Asombrado', 'fear': 'Estresado'
-                };
-                return mapa[emo] || emo;
+            const mapa = {
+                'happy': 'Vital / Radiante', 'neutral': 'Relajado',
+                'sad': 'Fatigado', 'angry': 'Tenso', 'surprise': 'Asombrado', 'fear': 'Estresado'
             };
-
+            const estado = mapa[data.face.dominant_emotion] || data.face.dominant_emotion;
             resultadoRasgos.innerHTML = `
-                <div style="background: rgba(209, 179, 255, 0.05); padding: 10px; border-radius: 5px;">
-                    <p style="margin: 0 0 5px 0;">📅 <b>Edad estimada:</b> ${data.face.age} años</p>
-                    <p style="margin: 0;">🎭 <b>Estado actual:</b> ${traducir(data.face.dominant_emotion)}</p>
-                    <p style="font-size: 0.7em; color: #888; margin-top: 8px;">* Basado en micro-expresiones faciales.</p>
+                <div style="background:rgba(209,179,255,0.05);padding:10px;border-radius:5px;">
+                    <p style="margin:0 0 5px 0;">📅 <b>Edad estimada:</b> ${data.face.age} años</p>
+                    <p style="margin:0;">🎭 <b>Estado actual:</b> ${estado}</p>
+                    <p style="font-size:0.7em;color:#888;margin-top:8px;">* Basado en micro-expresiones faciales.</p>
                 </div>`;
         } else {
             resultadoRasgos.innerHTML = "<p class='small'>No se detectó rostro para el análisis profundo.</p>";
         }
 
-        // AUTO-PRODUCTO: Cambiar la visualización 3D si existe el producto
-        if (window.cambiarProductoVisual && data.recomendaciones?.length > 0) {
-            window.cambiarProductoVisual(data.recomendaciones[0].id);
+        // Guardar carousel_config del backend en variable global accesible
+        if (data.carousel_config) window._carouselConfig = data.carousel_config;
+
+        // Popular filter_params de cada producto (dictados por app.py)
+        if (data.ui_config) {
+            window.productFilterParams = window.productFilterParams || {};
+            Object.entries(data.ui_config).forEach(([pid, cfg]) => {
+                if (cfg.filter_params) window.productFilterParams[pid] = cfg.filter_params;
+            });
+        }
+
+        // AUTO-PRODUCTO + carrusel: el backend ya decidió qué va primero.
+        // activarTratamiento es llamado internamente por aplicarConfigCarrusel
+        // al detectar is_default_selected — no llamar aquí para evitar doble activación.
+        if (data.recomendaciones?.length > 0) {
+            aplicarUiConfig(data.recomendaciones, data.ui_config);
         }
 
     } catch (err) {
@@ -320,6 +349,9 @@ const ejecutarModoSelfie = () => {
     
     // 1. Iniciamos la cámara INMEDIATAMENTE (fuera del setTimeout)
     initMediaPipe();
+
+    // Forzar recálculo del canvas una vez el contenedor tiene dimensiones reales
+    setTimeout(() => window.dispatchEvent(new Event('resize')), 200);
     
     // Forzamos al navegador a reproducir el video asociándolo a tu clic
     if (videoElement) {

@@ -1,12 +1,25 @@
 /*********************************
  * VISOR Y COMPARADOR            *
  *********************************/
-.viewer-card { margin-bottom: 12px; position: relative; }
+/* Visor compacto con título centrado y separación clara del carrusel */
+.viewer-card {
+    margin-bottom: 0;
+    position: relative;
+}
+
+.viewer-card h2 { text-align: center; }
 
 .viewer-container {
-    margin-top: 10px; position: relative; border-radius: 18px; overflow: hidden;
+    margin-top: 8px; position: relative; border-radius: 16px; overflow: hidden;
     background: radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.04), transparent 60%);
-    min-height: 500px; border: 1px solid rgba(255, 255, 255, 0.08);
+    aspect-ratio: 4 / 3;
+    max-height: 50vh;
+    max-width: 1100px;   /* expanded — llena el panel derecho */
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(224, 205, 149, 0.06);
 }
 
 #video { width: 100%; height: 100%; object-fit: cover; display: none; }
@@ -25,10 +38,41 @@
     left: 50%; transform: translateX(-1px); pointer-events: none;
 }
 
-.no-image-text {
+.no-image-content {
     position: absolute; inset: 0; display: flex;
+    flex-direction: column;
     align-items: center; justify-content: center;
-    font-size: 0.9rem; color: #a4a4bc; padding: 0 18px; text-align: center;
+    gap: 20px;
+    padding: 24px 32px;
+    text-align: center;
+}
+
+.no-image-content > p {
+    margin: 0;
+    font-size: 0.82rem;
+    color: rgba(180, 180, 200, 0.65);
+    letter-spacing: 0.04em;
+    line-height: 1.5;
+    max-width: 260px;
+}
+
+.no-image-content .center-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 220px;
+}
+
+.no-image-content .btn {
+    width: 100%;
+    padding: 11px 0;
+    font-size: 0.82rem;
+    margin-top: 0;
+    border-radius: 999px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
 }
 
 /* --- BOTÓN DE PANTALLA COMPLETA (RECUPERADO) --- */
@@ -62,88 +106,4 @@
 #compareSlider { width: 100%; margin-top: 8px; cursor: pointer; }
 
 
-/*********************************
- * NUEVA BARRA DE PRODUCTOS      *
- *********************************/
-.products-strip-container {
-    margin-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding-top: 15px;
-    text-align: center;
-}
-
-.products-strip-container h3 {
-    font-size: 0.9rem;
-    color: #94a3b8;
-    text-align: center; 
-    margin: 0 0 15px 0;
-    font-weight: 500;
-}
-
-.products-strip {
-    display: flex;
-    gap: 12px;
-    overflow-x: auto;
-    padding-bottom: 10px;
-    justify-content: center; 
-    scroll-behavior: smooth;
-    scrollbar-width: thin; 
-    scrollbar-color: #27272a transparent;
-}
-
-.products-strip::-webkit-scrollbar { height: 6px; }
-.products-strip::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
-
-/* MINIATURA DEL PRODUCTO */
-.product-thumb {
-    flex: 0 0 100px; 
-    background: #1e1e24;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    padding: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    margin-top: 5px;
-}
-
-.product-thumb:hover { background: #27272a; transform: translateY(-2px); }
-
-.product-thumb.active {
-    border-color: #E0CD95; 
-    background: #2a2a30;
-    box-shadow: 0 0 15px rgba(224, 205, 149, 0.2);
-}
-
-.thumb-img {
-    width: 100%; height: 70px;
-    background: #fff; border-radius: 8px;
-    margin-bottom: 8px;
-    display: flex; align-items: center; justify-content: center;
-    overflow: hidden;
-}
-
-.thumb-img img { max-width: 100%; max-height: 100%; object-fit: contain; }
-
-.thumb-name {
-    font-size: 0.7rem; 
-    color: #cbd5e1; 
-    line-height: 1.2;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical; 
-    overflow: hidden;
-}
-
-.product-thumb.active .thumb-name { color: #E0CD95; font-weight: 700; }
-
-@media (max-width: 600px) {
-    .products-strip {
-        justify-content: flex-start; 
-        padding-left: 20px; padding-right: 20px;
-    }
-}
+/* Strip system removed — layout handled by 3D orbit (#spin-container / .card-3d) */

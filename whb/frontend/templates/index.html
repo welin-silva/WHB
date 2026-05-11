@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="../static/css/pantalla_completa/modo-pantalla-completa.css">
     <link rel="stylesheet" href="../static/css/ia/resultados-ia.css">
     <link rel="stylesheet" href="../static/css/comparador/visor-comparador.css">
-    <link rel="stylesheet" href="../static/css/productos/carrousel.css">
     <link rel="stylesheet" href="../static/css/productos/carrousel-productos-3d.css">
     
     <link rel="icon" type="image/x-icon" href="../static/img/favicon_logo.png">
@@ -46,6 +45,9 @@
 
         <section class="right-panel">
             {% include 'componentes/viewer.html' %}
+            <div class="products-card">
+                {% include 'componentes/carrousel.html' %}
+            </div>
         </section>
     </main>
 

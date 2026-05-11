@@ -1,129 +1,206 @@
 /* =========================================================
-ESTILOS CARRUSEL 3D (VERSIÓN FINAL - SIN CORTES Y COLOR ORO)
-========================================================= */
+   CARRUSEL 3D — SHOWROOM + PRESCRIPTION CLUSTER
+   ========================================================= */
 
+/* ── CONTENEDOR RAÍZ ─────────────────────────────────────── */
 .carousel-section {
-    height: 600px; 
+    height: 280px !important;
     position: relative;
-    display: flex; 
-    flex-direction: column; 
-    justify-content: center; 
-    align-items: center;
-    overflow: visible !important; 
-    margin-top: 20px; 
-    perspective: 1000px;
-    width: 100%;
-}
-
-#drag-container, #spin-container {
-    position: relative; 
-    display: flex; 
-    margin: auto;
-    transform-style: preserve-3d; 
-    transform: rotateX(-10deg);
-}
-
-/* --- TARJETAS --- */
-.card-3d {
-    position: absolute; left: 0; top: 0; 
-    width: 140px; height: 190px; 
-    background: rgba(40, 40, 45, 0.5); 
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 12px; 
-    display: flex; 
+    display: flex;
     flex-direction: column;
-    align-items: center; 
-    justify-content: space-between; 
-    padding: 10px; 
-    cursor: grab;
-    -webkit-box-reflect: below 10px linear-gradient(transparent, transparent, rgba(0,0,0,0.2));
-    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s, background 0.3s;
+    justify-content: center;
+    align-items: center;
+    overflow: visible !important;
+    margin-top: 12px;
+    padding: 8px 24px !important;
+    perspective: 900px !important;
+    width: 100%;
+    /* Ensure side cards at ±162px are never clipped by parent containers */
+    min-width: 420px;
 }
 
-.card-3d:active { cursor: grabbing; }
-
-/* ESTADO HOVER (AL PASAR EL RATÓN) */
-.card-3d:hover {
-    box-shadow: 0 0 20px rgba(224, 205, 149, 0.5); 
-    border-color: #E0CD95;
-    transform: scale(1.1) translateZ(20px); 
-    background: rgba(60, 60, 65, 0.8);
-    z-index: 100;
+#drag-container {
+    position: relative;
+    display: flex;
+    margin: auto;
+    transform-style: preserve-3d;
+    transform: rotateX(-7deg);
+    overflow: visible !important;
 }
 
-/* IMAGEN DEL PRODUCTO */
+#spin-container {
+    position: relative;
+    display: flex;
+    margin: auto;
+    transform-style: preserve-3d;
+    overflow: visible !important;
+}
+
+/* ── TARJETA BASE ─────────────────────────────────────────── */
+.card-3d {
+    position: absolute; left: 0; top: 0;
+    width: 100px; height: 142px;
+    background: rgba(34, 34, 38, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 11px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px;
+    overflow: visible !important;
+    cursor: pointer;
+    /* JS controla opacity y transform; CSS sólo transiciona border y background */
+    transition: border-color 0.3s ease, background 0.3s ease;
+    will-change: transform, opacity;
+}
+
+/* ── IMAGEN ───────────────────────────────────────────────── */
 .card-3d img {
-    width: 100%; height: 70%; object-fit: contain; 
+    width: 100%; height: 62%;
+    object-fit: contain;
     background: #fff;
-    border-radius: 6px; 
+    border-radius: 5px;
     pointer-events: none;
+    flex-shrink: 0;
 }
 
-/* TEXTO DEL PRODUCTO */
+/* ── TEXTO ────────────────────────────────────────────────── */
 .card-3d-text {
-    height: 25%; width: 100%; 
-    display: flex; align-items: center; 
+    flex: 1;
+    min-height: 34px;
+    width: 100%;
+    display: flex; align-items: center;
     justify-content: center; text-align: center;
+    padding-top: 3px;
 }
 
 .p-name {
-    font-size: 0.75rem; 
-    color: #f1f5f9;
-    font-weight: 600; 
-    line-height: 1.2; 
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    font-size: 0.56rem;
+    color: #dde4ef;
+    font-weight: 600;
+    line-height: 1.28;
+    white-space: normal !important;
+    width: 100%;
     pointer-events: none;
 }
 
-/* TEXTO CENTRAL FLOTANTE (WHB) */
+/* ── HOVER (showroom — no se aplica en cluster) ───────────── */
+.card-3d:hover:not(.active-treatment):not(.ia-recomendado) {
+    border-color: rgba(224, 205, 149, 0.45);
+    background: rgba(50, 50, 55, 0.85);
+}
+
+/* ── IA-RECOMENDADO ───────────────────────────────────────── */
+@keyframes card-glow-pulse {
+    0%, 100% {
+        box-shadow: 0 0 10px 3px var(--glow-card, rgba(224,205,149,0.50)),
+                    0 0 26px 7px var(--glow-card-far, rgba(224,205,149,0.12));
+    }
+    50% {
+        box-shadow: 0 0 20px 6px var(--glow-card, rgba(224,205,149,0.82)),
+                    0 0 44px 12px var(--glow-card-far, rgba(224,205,149,0.22));
+    }
+}
+
+.card-3d.ia-recomendado {
+    border-color: var(--glow-card, rgba(224,205,149,0.60)) !important;
+    background: rgba(46, 44, 26, 0.90) !important;
+    animation: card-glow-pulse 2.4s ease-in-out infinite !important;
+    overflow: visible !important;
+}
+
+.card-3d.ia-recomendado::before {
+    content: "IA";
+    position: absolute;
+    top: -8px; right: -4px;
+    background: linear-gradient(135deg, #E0CD95, #c9a84c);
+    color: #000;
+    font-size: 0.48rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    padding: 2px 5px;
+    border-radius: 4px;
+    z-index: 10;
+}
+
+/* ── ACTIVE-TREATMENT ─────────────────────────────────────── */
+@keyframes active-glow-pulse {
+    0%, 100% {
+        box-shadow: 0 0 20px 6px var(--glow-card, rgba(224,205,149,0.80)),
+                    0 0 44px 12px var(--glow-card-far, rgba(224,205,149,0.30)),
+                    inset 0 0 8px rgba(255,255,255,0.04);
+    }
+    50% {
+        box-shadow: 0 0 34px 10px var(--glow-card, rgba(224,205,149,1.0)),
+                    0 0 72px 20px var(--glow-card-far, rgba(224,205,149,0.44)),
+                    inset 0 0 14px rgba(255,255,255,0.07);
+    }
+}
+
+.card-3d.active-treatment {
+    border: 2px solid var(--glow-card, #E0CD95) !important;
+    background: rgba(58, 52, 22, 0.96) !important;
+    animation: active-glow-pulse 1.8s ease-in-out infinite !important;
+    overflow: visible !important;
+    /* z-index managed by JS per-frame to allow smooth stacking during transitions */
+    outline: 1px solid rgba(255,255,255,0.15);
+    outline-offset: 3px;
+}
+
+.card-3d.active-treatment::before {
+    content: "ACTIVO" !important;
+    position: absolute;
+    top: -10px; left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #E0CD95, #b8962e);
+    color: #000;
+    font-size: 0.46rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    padding: 2px 7px;
+    border-radius: 20px;
+    z-index: 10;
+    white-space: nowrap;
+}
+
+/* ── CLUSTER MODE — label del panel ──────────────────────── */
+.carousel-section.cluster-active::before {
+    content: "TRATAMIENTO PRESCRITO";
+    position: absolute;
+    top: 4px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.46rem;
+    letter-spacing: 0.18em;
+    color: rgba(224, 205, 149, 0.55);
+    font-weight: 700;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+/* ── GROUND ───────────────────────────────────────────────── */
 #spin-container p {
-    font-family: Serif; 
-    position: absolute; 
+    font-family: Serif;
+    position: absolute;
     top: 100%; left: 50%;
     transform: translate(-50%, -50%) rotateX(90deg);
-    color: #E0CD95; 
-    font-size: 3em; 
-    opacity: 0.15; 
+    color: #E0CD95;
+    font-size: 1.6em;
+    opacity: 0.06;
     pointer-events: none;
 }
 
-/* SUELO BRILLANTE */
 #ground {
-    width: 900px; height: 900px; 
+    width: 500px; height: 500px;
     position: absolute; top: 100%; left: 50%;
     transform: translate(-50%, -50%) rotateX(90deg);
-    background: radial-gradient(center center, farthest-side, rgba(224, 205, 149, 0.08), transparent); 
+    background: radial-gradient(ellipse at center, rgba(224,205,149,0.05) 0%, transparent 70%);
     pointer-events: none;
 }
 
-/* --- ESTADO ACTIVO (Producto Seleccionado) --- */
-.card-3d.selected {
-    box-shadow: 0 0 25px rgba(224, 205, 149, 0.6) !important; 
-    border-color: #E0CD95 !important;
-    background: rgba(60, 60, 65, 0.9) !important;
-    transform: scale(1.15) translateZ(30px) !important;
-    z-index: 200 !important;
-}
-
-/* Pequeño indicador visual de "Seleccionado" */
-.card-3d.selected::after {
-    content: "APLICADO";
-    position: absolute;
-    top: -12px;
-    background: #E0CD95;
-    color: #000;
-    font-size: 0.6rem;
-    font-weight: 800;
-    padding: 4px 8px;
-    border-radius: 4px;
-    letter-spacing: 1px;
-}
-
-/* ANIMACIONES */
-@keyframes spin { 
-    from{ transform: rotateY(0deg); } 
-    to{ transform: rotateY(360deg); } 
-}
-@keyframes spinRevert { 
-    from{ transform: rotateY(360deg); } 
-    to{ transform: rotateY(0deg); } 
-}
+@keyframes spin       { from{ transform: rotateY(0deg); }   to{ transform: rotateY(360deg); } }
+@keyframes spinRevert { from{ transform: rotateY(360deg); } to{ transform: rotateY(0deg); }   }

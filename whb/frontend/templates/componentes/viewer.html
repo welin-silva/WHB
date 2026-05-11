@@ -89,17 +89,4 @@
                value="50">
     </div>
 
-    <div class="products-strip-container">
-        <h3 data-i18n="VIEWER.PRODUCTS_TITLE"></h3>
-        <div class="products-strip">
-            {% for p in productos %}
-            <div class="product-thumb" data-product-id="{{ p.id }}">
-                <div class="thumb-img">
-                    <img src="{{ p.imagen_url }}" alt="{{ p.nombre }}">
-                </div>
-                <span class="thumb-name">{{ p.nombre }}</span>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
 </div>

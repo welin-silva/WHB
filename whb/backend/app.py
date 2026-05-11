@@ -38,44 +38,50 @@ MARTIDERM_PRODUCTS = [
 # saturate en rango 0.88-1.20 → diferenciación perceptible sin sobreexposición.
 CALIBRATED_FILTERS = {
     "arrugas": {
-        # Suavizado de piel sin pérdida de detalle
-        "blur":       0.35,
-        "brightness": 1.07,
-        "contrast":   1.06,
-        "saturate":   1.02,
-        "sepia":      0.0,
+        # Anti-aging: soft diffusion reduces line visibility without beauty-filter blur
+        "blur":        0.45,   # fine-line softening — well below smooth-skin threshold
+        "brightness":  1.05,
+        "contrast":    1.08,   # mild lift — restores apparent firmness
+        "saturate":    1.04,
+        "sepia":       0.0,
+        "hue_rotate":  0,
     },
     "manchas": {
-        # Homogeneización de tono — saturación elevada pero contenida
-        "blur":       0.0,
-        "brightness": 1.04,
-        "contrast":   1.04,
-        "saturate":   1.20,
-        "sepia":      0.0,
+        # Pigment correction: tone-evening lift — vivid but recognizably real
+        "blur":        0.0,
+        "brightness":  1.10,   # lifts dark zones without blowing highlights
+        "contrast":    1.04,
+        "saturate":    1.20,   # clear tone improvement, not cartoon-vivid
+        "sepia":       0.0,
+        "hue_rotate":  0,
     },
     "firmeza": {
-        # Piel tensa: contraste moderado, sin blur
-        "blur":       0.0,
-        "brightness": 1.05,
-        "contrast":   1.12,
-        "saturate":   1.06,
-        "sepia":      0.0,
+        # Firmness: sharpened contours — most distinct signature
+        "blur":        0.0,
+        "brightness":  1.03,
+        "contrast":    1.18,   # noticeable definition; below "HDR" territory
+        "saturate":    1.07,
+        "sepia":       0.0,
+        "hue_rotate":  0,
     },
     "piel_apagada": {
-        # Luminosidad: brillo y saturación conjuntos
-        "blur":       0.0,
-        "brightness": 1.14,
-        "contrast":   1.06,
-        "saturate":   1.18,
-        "sepia":      0.0,
+        # Radiance booster: clear luminosity improvement without glow overload
+        "blur":        0.0,
+        "brightness":  1.16,   # strongest brightness, still believable on screen
+        "contrast":    1.04,
+        "saturate":    1.18,   # warm healthy skin — not oversaturated
+        "sepia":       0.0,
+        "hue_rotate":  0,
     },
     "acne": {
-        # Reducción de rojez: desaturación leve + sepia mínimo
-        "blur":       0.30,
-        "brightness": 1.04,
-        "contrast":   1.08,
-        "saturate":   0.88,
-        "sepia":      0.06,
+        # Redness reduction: shift reds toward neutral, calm without whitening
+        # hue-rotate(-12deg) nudges skin reds toward orange/neutral — skin identity preserved
+        "blur":        0.35,   # light diffusion — softens inflamed texture
+        "brightness":  1.02,   # near-neutral — preserve real skin luminance
+        "contrast":    0.96,   # REDUCE slightly — calms visual inflammation
+        "saturate":    0.90,   # mild desaturation — keeps skin warm, removes angry tones
+        "sepia":       0.0,
+        "hue_rotate":  -12,    # key: rotates reds away without graying the face
     },
 }
 
@@ -139,22 +145,134 @@ def construir_ui_config(recomendados_ids):
     }
     return ui, carousel_config
 
-def analizar_piel_sencillo(imagen_pil):
-    # Lógica HSV para medir la "luz" de la botella (tu piel)
-    img = np.array(imagen_pil.resize((256, 256)))
-    hsv = np.array(Image.fromarray(img).convert("HSV"))
-    lum = hsv[:, :, 2].mean()
-    sat = hsv[:, :, 1].mean()
+_PROBLEM_LABELS = {
+    "piel_apagada": "Piel apagada y falta de luminosidad",
+    "manchas":      "Irregularidad de tono y pigmentación",
+    "arrugas":      "Líneas de expresión y textura irregular",
+    "acne":         "Rojeces e imperfecciones activas",
+    "firmeza":      "Pérdida de firmeza y definición del contorno",
+}
+
+def analizar_piel_completo(imagen_pil, face_boosts=None):
+    """
+    Multi-signal HSV + LAB + Laplacian skin analysis.
+    Returns metrics (for UI panel) + scored conditions (for recommendation engine).
+    face_boosts: optional dict {pid -> extra_score} merged from DeepFace signals.
+    """
+    face_boosts = face_boosts or {}
+
+    img_rgb = np.array(imagen_pil.resize((256, 256)))
+    img_bgr = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2BGR)
+
+    hsv_f  = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV).astype(np.float32)
+    lab_f  = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2LAB).astype(np.float32)
+    gray_f = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY).astype(np.float32)
+
+    # Skin tone mask
+    hsv_u8   = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
+    skin_mask = cv2.inRange(hsv_u8,
+                            np.array([0, 15, 55], dtype=np.uint8),
+                            np.array([25, 220, 255], dtype=np.uint8))
+    skin_px = int(cv2.countNonZero(skin_mask))
+    if skin_px < 200:                       # no skin detected → use full image
+        skin_mask = np.ones((256, 256), dtype=np.uint8) * 255
+        skin_px   = 256 * 256
+
+    def masked_mean(ch):
+        return float(np.mean(ch[skin_mask > 0]))
+    def masked_std(ch):
+        return float(np.std(ch[skin_mask > 0]))
+
+    # ── METRIC 1: LUMINOSITY ─────────────────────────────────────
+    # Raw V-channel mean in skin zone (0-255). Real selfie faces typically
+    # land in 120-210. Map to a 15-90 display scale so "good skin" reads
+    # ~55-75 instead of hitting 100 under studio light.
+    lum_raw  = masked_mean(hsv_f[:, :, 2])
+    lum_norm = round(float(np.clip((lum_raw - 80) / 1.6, 15.0, 90.0)), 1)
+
+    # ── METRIC 2: SATURATION ─────────────────────────────────────
+    sat_raw  = masked_mean(hsv_f[:, :, 1])
+    sat_norm = round(float(np.clip(sat_raw / 2.9, 8.0, 85.0)), 1)
+
+    # ── METRIC 3: UNIFORMITY (std of L* in LAB) ──────────────────
+    # Typical healthy-skin L* std is 8-18; problem skin 18-30+.
+    # Floor at 18 so "perfect" never appears; ceil via the * 2.6 factor.
+    l_std      = masked_std(lab_f[:, :, 0])
+    uniformity = round(float(np.clip(100.0 - l_std * 2.6, 18.0, 88.0)), 1)
+
+    # ── METRIC 4: TEXTURE ROUGHNESS (Laplacian variance) ─────────
+    # At 256×256, smooth skin ≈ 60-200 var, normal ≈ 200-500, rough ≈ 500+.
+    # Divide by 9 and cap at 78 so JPEG noise alone never reaches maximum.
+    lap      = cv2.Laplacian(gray_f, cv2.CV_32F)
+    lap_skin = lap[skin_mask > 0]
+    tex_var  = float(np.var(lap_skin))
+    texture  = round(float(np.clip(tex_var / 9.0, 5.0, 78.0)), 1)
+
+    # ── METRIC 5: REDNESS — lighting-compensated ─────────────────
+    # The root problem: warm indoor light makes R-G > 12 for nearly all
+    # skin pixels, so a fixed threshold spikes to 100 every time.
+    # Fix: use the 65th-percentile R-G of skin as the individual baseline
+    # (this adapts to the room's colour temperature), then measure how many
+    # pixels exceed that baseline by ≥ 20 points (genuine inflammation).
+    _, g_ch, r_ch = cv2.split(img_bgr.astype(np.float32))
+    rg_diff   = (r_ch - g_ch)
+    rg_skin   = rg_diff[skin_mask > 0]
+    # 65th-pct = "warm but normal" skin in this lighting
+    baseline  = float(np.percentile(rg_skin, 65))
+    red_thresh = max(baseline + 20, 25)             # at least 25 absolute
+    red_area  = int(np.sum((rg_diff > red_thresh) & (skin_mask > 0)))
+    # Multiplier 160 + cap 72: even heavy acne won't fake 100%
+    redness   = round(float(np.clip((red_area / skin_px) * 160, 0.0, 72.0)), 1)
+
+    # ── METRIC 6: HYDRATION ESTIMATE (composite) ─────────────────
+    hydration = round(float(np.clip(
+        lum_norm * 0.35 + uniformity * 0.40 + (100.0 - texture) * 0.25,
+        15.0, 88.0)), 1)
+
+    metrics = {
+        "luminosidad":        lum_norm,
+        "saturacion":         sat_norm,
+        "uniformidad":        uniformity,
+        "textura":            texture,
+        "rojez":              redness,
+        "hidratacion":        hydration,
+        # legacy keys kept for backward compat
+        "luminosidad_media":  lum_norm,
+        "saturacion_media":   sat_norm,
+    }
+
+    # ── SCORING → RECOMMENDATION ENGINE ──────────────────────────
+    # Each score is an independent signal; face_boosts from DeepFace add on top.
+    scores = {
+        "piel_apagada": max(0.0, (78 - lum_norm) * 1.3 + (55 - sat_norm) * 0.7),
+        "manchas":      max(0.0, (88 - uniformity) * 1.6),
+        "arrugas":      max(0.0, texture * 0.95 - 12),
+        "acne":         max(0.0, redness * 1.3 - 8),
+        "firmeza":      max(0.0, texture * 0.55 + (100 - uniformity) * 0.45 - 22),
+    }
+    for pid, boost in face_boosts.items():
+        if pid in scores:
+            scores[pid] = scores[pid] + boost
+
+    THRESHOLD = 14
+    ranked    = sorted(scores.items(), key=lambda x: x[1], reverse=True)
 
     problemas, recomendaciones = [], []
-    if lum < 90:
-        problemas.append("Piel apagada (Falta de reflexión)")
-        recomendaciones.append(buscar_producto("piel_apagada"))
-    if sat < 65:
-        problemas.append("Tono no uniforme (Fallo de matizado)")
-        recomendaciones.append(buscar_producto("manchas"))
+    for pid, score in ranked:
+        if score >= THRESHOLD and len(recomendaciones) < 3:
+            problemas.append(_PROBLEM_LABELS[pid])
+            p = buscar_producto(pid)
+            if p:
+                recomendaciones.append(p)
 
-    return {"problemas": problemas, "recomendaciones": recomendaciones}
+    if not recomendaciones:                                     # healthy baseline fallback
+        top_pid = ranked[0][0] if ranked else "piel_apagada"
+        problemas.append("Mantenimiento preventivo recomendado")
+        p = buscar_producto(top_pid)
+        if p:
+            recomendaciones.append(p)
+
+    return {"metrics": metrics, "problemas": problemas, "recomendaciones": recomendaciones}
 
 @app.route("/")
 def index():
@@ -173,29 +291,19 @@ def analizar_piel_api():
         imagen_pil = Image.open(io.BytesIO(image_bytes)).convert("RGB")
         frame_cv = cv2.cvtColor(np.array(imagen_pil), cv2.COLOR_RGB2BGR)
 
-        # 1. Lógica de Ingeniería de Superficies (HSV)
-        resultado = analizar_piel_sencillo(imagen_pil)
-
-        # 2. IA de Rasgos Facial (DeepFace)
+        # 1. DeepFace primero — produce face_boosts que el motor HSV necesita
         analisis_ia = analyze_frame(frame_cv)
-        resultado.update({
-            "face_detected": analisis_ia.get("face_detected", False),
-            "face": analisis_ia.get("face"),
-            "warnings": analisis_ia.get("warnings", [])
-        })
 
-        # 3. Mapear problemas de DeepFace a productos estrictos
-        if analisis_ia.get("face_detected"):
-            face_probs = analisis_ia.get("problemas", [])
-            resultado["problemas"].extend(face_probs)
-            if "Zonas de fatiga lumínica" in face_probs:
-                p = buscar_producto("arrugas")
-                if p not in resultado["recomendaciones"]:
-                    resultado["recomendaciones"].append(p)
-            if "Irregularidad en textura" in face_probs:
-                p = buscar_producto("firmeza")
-                if p not in resultado["recomendaciones"]:
-                    resultado["recomendaciones"].append(p)
+        # 2. Análisis multi-señal HSV + LAB + Laplacian, con boosts de DeepFace integrados
+        resultado = analizar_piel_completo(imagen_pil,
+                                           face_boosts=analisis_ia.get("face_boosts", {}))
+
+        # 3. Adjuntar datos faciales al resultado final
+        resultado["face_detected"] = analisis_ia.get("face_detected", False)
+        resultado["face"]          = analisis_ia.get("face")
+        resultado["warnings"]      = analisis_ia.get("warnings", [])
+        # DeepFace surface-level problems (age/emotion labels) appended after HSV ones
+        resultado["problemas"].extend(analisis_ia.get("problemas", []))
 
         # 4. Calcular ui_config (cerebro Python dicta posición, estilo y radio del carrusel)
         rec_ids              = [r["id"] for r in resultado["recomendaciones"]]

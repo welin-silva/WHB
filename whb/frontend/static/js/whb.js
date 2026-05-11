@@ -209,14 +209,38 @@ async function enviarImagenParaAnalisis(dataUrl) {
         const data = await res.json();
         if (!res.ok) throw new Error("Error en respuesta del servidor");
 
-        // --- 1. PANEL: VALORACIÓN DE TU PIEL (OpenCV / HSV) ---
+        // --- 1. PANEL: VALORACIÓN DE TU PIEL ---
         if (data.metrics) {
+            const m = data.metrics;
+            const metricRows = [
+                { label: "Luminosidad",  value: m.luminosidad,  color: "#f1d592", icon: "☀️" },
+                { label: "Hidratación",  value: m.hidratacion,  color: "#7dd4c0", icon: "💧" },
+                { label: "Uniformidad",  value: m.uniformidad,  color: "#a78bfa", icon: "◈"  },
+                { label: "Firmeza",      value: Math.max(0, 100 - m.textura), color: "#ff9eb5", icon: "◆" },
+                { label: "Rojez",        value: m.rojez,        color: "#f87171", icon: "●", invert: true },
+            ];
+            const barHtml = metricRows.map(row => {
+                const v    = Math.round(Math.min(Math.max(row.value, 0), 100));
+                // For "Rojez", low = good; show bar as risk level
+                const fill = row.invert ? v : v;
+                const textColor = row.invert && v > 40 ? "#f87171" : (v < 35 ? "#94a3b8" : "#e2e8f0");
+                return `
+                <div style="margin-bottom:9px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+                        <span style="font-size:0.72rem;color:#94a3b8;letter-spacing:0.04em;">${row.icon} ${row.label.toUpperCase()}</span>
+                        <span style="font-size:0.74rem;font-weight:700;color:${textColor};">${v}</span>
+                    </div>
+                    <div style="height:4px;border-radius:99px;background:rgba(255,255,255,0.07);overflow:hidden;">
+                        <div style="height:100%;width:${fill}%;border-radius:99px;background:${row.color};
+                                    transition:width 0.8s cubic-bezier(0.22,1,0.36,1);opacity:0.85;"></div>
+                    </div>
+                </div>`;
+            }).join('');
             resultadoPiel.innerHTML = `
-                <ul style="font-size: 0.9em; line-height: 1.6;">
-                    <li><b>Luminosidad:</b> ${Math.round(data.metrics.luminosidad_media || data.metrics.luminosidad)}</li>
-                    <li><b>Saturación:</b> ${Math.round(data.metrics.saturacion_media || data.metrics.saturacion)}</li>
-                </ul>
-                <p style="font-size: 0.75em; color: #777;">Análisis de pigmentación base completado.</p>
+                <p style="font-size:0.68rem;letter-spacing:0.1em;color:#64748b;margin:0 0 10px;font-weight:600;">
+                    ANÁLISIS BIOMÉTRICO CUTÁNEO
+                </p>
+                ${barHtml}
             `;
         }
 

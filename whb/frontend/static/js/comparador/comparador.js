@@ -52,16 +52,15 @@ window.productFilterParams = window.productFilterParams || {};
 
 function filtroCss(pid) {
     const p = window.productFilterParams[pid];
-    if (!p) {
-        // Fallback suave mientras no haya datos del backend
-        return "brightness(1.05)";
-    }
+    if (!p) return "brightness(1.05)";
     const partes = [];
-    if (p.blur       > 0) partes.push(`blur(${p.blur}px)`);
-    if (p.brightness)     partes.push(`brightness(${p.brightness})`);
-    if (p.contrast)       partes.push(`contrast(${p.contrast})`);
-    if (p.saturate)       partes.push(`saturate(${p.saturate})`);
-    if (p.sepia      > 0) partes.push(`sepia(${p.sepia})`);
+    if (p.blur        > 0)  partes.push(`blur(${p.blur}px)`);
+    if (p.brightness)       partes.push(`brightness(${p.brightness})`);
+    if (p.contrast)         partes.push(`contrast(${p.contrast})`);
+    if (p.saturate)         partes.push(`saturate(${p.saturate})`);
+    if (p.sepia       > 0)  partes.push(`sepia(${p.sepia})`);
+    if (p.hue_rotate  !== 0 && p.hue_rotate != null)
+                            partes.push(`hue-rotate(${p.hue_rotate}deg)`);
     return partes.length ? partes.join(" ") : "brightness(1.05)";
 }
 

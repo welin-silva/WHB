@@ -242,19 +242,37 @@ def analizar_piel_completo(imagen_pil, face_boosts=None):
     }
 
     # ── SCORING → RECOMMENDATION ENGINE ──────────────────────────
-    # Each score is an independent signal; face_boosts from DeepFace add on top.
+    # Each formula fires only when the signal is genuinely pathological.
+    # Calibration targets:
+    #   lum_norm typical healthy face: 55-75   (dull < 52)
+    #   sat_norm typical healthy face: 16-30   (flat skin < 18)
+    #   uniformity typical healthy:    65-80   (uneven < 60)
+    #   texture   typical healthy:     10-30   (rough > 40)
+    #   redness   typical healthy:     0-15    (inflamed > 25)
     scores = {
-        "piel_apagada": max(0.0, (78 - lum_norm) * 1.3 + (55 - sat_norm) * 0.7),
-        "manchas":      max(0.0, (88 - uniformity) * 1.6),
-        "arrugas":      max(0.0, texture * 0.95 - 12),
-        "acne":         max(0.0, redness * 1.3 - 8),
-        "firmeza":      max(0.0, texture * 0.55 + (100 - uniformity) * 0.45 - 22),
+        # Dull skin / fatigue: fires when luminosity OR saturation are genuinely low
+        "piel_apagada": max(0.0,
+            max(0.0, (62 - lum_norm)) * 1.3
+            + max(0.0, (18 - sat_norm)) * 1.2),
+
+        # Pigmentation / uneven tone: fires on genuinely poor uniformity
+        "manchas":      max(0.0, (70 - uniformity) * 1.6),
+
+        # Wrinkles / texture damage: fires on high-texture signal (fine lines)
+        "arrugas":      max(0.0, texture * 1.1 - 20),
+
+        # Redness / acne / inflammation: fires only on genuine redness
+        "acne":         max(0.0, redness * 1.5 - 14),
+
+        # Firmeza: driven mainly by non-uniformity (sagging contour) not texture,
+        # so it diverges from arrugas on different skin profiles
+        "firmeza":      max(0.0, (100 - uniformity) * 0.9 + texture * 0.25 - 28),
     }
     for pid, boost in face_boosts.items():
         if pid in scores:
             scores[pid] = scores[pid] + boost
 
-    THRESHOLD = 14
+    THRESHOLD = 15
     ranked    = sorted(scores.items(), key=lambda x: x[1], reverse=True)
 
     problemas, recomendaciones = [], []
